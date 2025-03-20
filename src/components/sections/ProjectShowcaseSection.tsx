@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Section, Container, Heading, Text, Button, Grid } from '@/components/ui';
+import { Section, Container, Heading, Text, Button } from '@/components/ui';
+import * as FirebaseAPI from '@/lib/firebase/api/projects';
+import { Project } from '@/lib/firebase';
 
 // Temporarily fix image imports by adding fallback content
 const ProjectImage = ({ src, alt }: { src: string; alt: string }) => (
@@ -10,81 +12,6 @@ const ProjectImage = ({ src, alt }: { src: string; alt: string }) => (
     <span className="text-gray-500 dark:text-gray-400">{alt}</span>
   </div>
 );
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  image: string;
-  technologies: string[];
-  features: string[];
-  link: string;
-}
-
-// Sample project data
-const projects: Project[] = [
-  {
-    id: 1,
-    title: 'E-commerce Platform',
-    description: 'A scalable e-commerce solution with advanced product filtering, cart management, and secure checkout process.',
-    category: 'Web Development',
-    image: '/images/project-ecommerce.jpg',
-    technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-    features: ['Product search & filtering', 'User accounts', 'Secure payments', 'Order tracking'],
-    link: '#'
-  },
-  {
-    id: 2,
-    title: 'Finance Management App',
-    description: 'Mobile application that helps users track expenses, set budgets, and visualize spending patterns with detailed analytics.',
-    category: 'Mobile App',
-    image: '/images/project-finance.jpg',
-    technologies: ['React Native', 'Firebase', 'Redux', 'Chart.js'],
-    features: ['Expense tracking', 'Budget planning', 'Data visualization', 'Financial insights'],
-    link: '#'
-  },
-  {
-    id: 3,
-    title: 'Healthcare Dashboard',
-    description: 'Comprehensive dashboard for healthcare providers to manage patient data, appointments, and medical records securely.',
-    category: 'Web Application',
-    image: '/images/project-healthcare.jpg',
-    technologies: ['Angular', 'TypeScript', 'Express', 'PostgreSQL'],
-    features: ['Patient management', 'Appointment scheduling', 'Medical records', 'Analytics'],
-    link: '#'
-  },
-  {
-    id: 4,
-    title: 'Real Estate Platform',
-    description: 'Property listing platform with advanced search, virtual tours, and agent-client communication tools.',
-    category: 'Web Platform',
-    image: '/images/project-realestate.jpg',
-    technologies: ['Next.js', 'Tailwind CSS', 'Supabase', 'Mapbox'],
-    features: ['Property search', 'Virtual tours', 'Agent dashboard', 'Favorites & alerts'],
-    link: '#'
-  },
-  {
-    id: 5,
-    title: 'Learning Management System',
-    description: 'Educational platform for course creation, student enrollment, progress tracking, and interactive learning.',
-    category: 'Education',
-    image: '/images/project-education.jpg',
-    technologies: ['Vue.js', 'Laravel', 'MySQL', 'WebSockets'],
-    features: ['Course management', 'Student progress', 'Interactive quizzes', 'Discussion forums'],
-    link: '#'
-  },
-  {
-    id: 6,
-    title: 'Fitness Tracking App',
-    description: 'Mobile application for tracking workouts, nutrition, and health metrics with personalized recommendations.',
-    category: 'Mobile App',
-    image: '/images/project-fitness.jpg',
-    technologies: ['Flutter', 'Dart', 'Firebase', 'TensorFlow Lite'],
-    features: ['Workout planning', 'Nutrition tracking', 'Progress analytics', 'AI recommendations'],
-    link: '#'
-  }
-];
 
 // Categories for filtering
 const categories = [
@@ -97,6 +24,12 @@ const categories = [
 ];
 
 export default function ProjectShowcaseSection() {
+  // State for projects data
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // State for UI
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -108,6 +41,29 @@ export default function ProjectShowcaseSection() {
   });
   
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  
+  // Fetch projects from Firebase on component mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setIsLoading(true);
+      try {
+        const result = await FirebaseAPI.getAllProjects();
+        
+        if (result.success && result.projects) {
+          setProjects(result.projects);
+        } else {
+          setError('Failed to load projects');
+        }
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError('An unexpected error occurred');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
   
   // Filter projects based on selected category
   const filteredProjects = activeCategory === 'All' 
@@ -232,93 +188,157 @@ export default function ProjectShowcaseSection() {
           </div>
         </motion.div>
         
-        {/* Projects grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="mb-16"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <motion.div 
-                key={project.id}
-                variants={projectVariants}
-                className="group relative"
-                whileHover={{ y: -10 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
+        
+        {/* Error state */}
+        {error && (
+          <div className="text-center py-16">
+            <motion.div 
+              className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 inline-block mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <svg className="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Failed to load projects</h3>
+              <p className="text-red-700 dark:text-red-300">{error}</p>
+              <Button 
+                variant="secondary" 
+                className="mt-4"
+                onClick={() => window.location.reload()}
               >
-                <div className="relative overflow-hidden rounded-xl shadow-lg">
-                  {/* Project image */}
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <div className="absolute inset-0 transition duration-500 transform group-hover:scale-110">
-                      <ProjectImage src={project.image} alt={project.title} />
-                    </div>
-                    
-                    {/* Category badge */}
-                    <div className="absolute top-4 left-4 px-3 py-1 bg-black/70 text-white rounded-full text-xs backdrop-blur-sm">
-                      {project.category}
-                    </div>
-                    
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  
-                  {/* Project info */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                    <p className="text-gray-200 text-sm mb-4 line-clamp-2">{project.description}</p>
-                    
-                    {/* Technologies */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <span 
-                          key={tech} 
-                          className="px-2 py-1 bg-white/20 rounded-md text-white text-xs backdrop-blur-sm"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <span className="px-2 py-1 bg-white/20 rounded-md text-white text-xs backdrop-blur-sm">
-                          +{project.technologies.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                    
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      onClick={() => openProjectModal(project)}
-                      className="mt-auto"
+                Retry
+              </Button>
+            </motion.div>
+          </div>
+        )}
+        
+        {/* Projects grid - shown when not loading and no error */}
+        {!isLoading && !error && (
+          <>
+            {/* No projects message */}
+            {filteredProjects.length === 0 && (
+              <div className="text-center py-16">
+                <motion.div 
+                  className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-8 inline-block mx-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                  <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    No projects found for {activeCategory}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    Try selecting a different category or check back later.
+                  </p>
+                  <Button 
+                    variant="secondary"
+                    onClick={() => setActiveCategory('All')}
+                  >
+                    View All Projects
+                  </Button>
+                </motion.div>
+              </div>
+            )}
+            
+            {/* Projects grid */}
+            {filteredProjects.length > 0 && (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                className="mb-16"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredProjects.map((project) => (
+                    <motion.div 
+                      key={project.id}
+                      variants={projectVariants}
+                      className="group relative h-full"
+                      whileHover={{ y: -10 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
                     >
-                      View Details
-                    </Button>
-                  </div>
+                      <div className="relative overflow-hidden rounded-xl shadow-lg h-full flex flex-col">
+                        {/* Project image */}
+                        <div className="aspect-[4/3] relative overflow-hidden">
+                          <div className="absolute inset-0 transition duration-500 transform group-hover:scale-110">
+                            <ProjectImage src={project.image} alt={project.title} />
+                          </div>
+                          
+                          {/* Category badge */}
+                          <div className="absolute top-4 left-4 px-3 py-1 bg-black/70 text-white rounded-full text-xs backdrop-blur-sm">
+                            {project.category}
+                          </div>
+                        </div>
+                        
+                        {/* Static info - always visible */}
+                        <div className="p-5 bg-white dark:bg-gray-800 flex flex-col flex-grow">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{project.title}</h3>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{project.description}</p>
+                          
+                          {/* Technologies */}
+                          <div className="flex flex-wrap gap-1 mb-4">
+                            {project.technologies.slice(0, 3).map((tech) => (
+                              <span 
+                                key={tech} 
+                                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300 text-xs"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                            {project.technologies.length > 3 && (
+                              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300 text-xs">
+                                +{project.technologies.length - 3}
+                              </span>
+                            )}
+                          </div>
+                          
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            onClick={() => openProjectModal(project)}
+                            className="mt-auto self-start"
+                          >
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
-        
-        {/* See more projects button */}
-        <motion.div 
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          <Button 
-            variant="outline" 
-            size="lg" 
-            href="#"
-            className="px-8 py-3 text-lg"
-          >
-            See More Projects
-          </Button>
-        </motion.div>
+            )}
+            
+            {/* See more projects button - only show if at least one project exists */}
+            {projects.length > 0 && (
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  href="/projects"
+                  className="px-8 py-3 text-lg"
+                >
+                  See More Projects
+                </Button>
+              </motion.div>
+            )}
+          </>
+        )}
       </Container>
       
       {/* Project details modal */}

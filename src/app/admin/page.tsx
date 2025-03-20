@@ -1,105 +1,227 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getRecentContactSubmissions } from '@/lib/firestore';
-import { useFirebase } from '@/context/FirebaseContext';
-import { Timestamp } from 'firebase/firestore';
+import { collection, getDocs, DocumentData } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-interface Submission {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  subject: string;
-  message: string;
-  createdAt: Timestamp;
+interface Stats {
+  projects: number;
+  services: number;
+  companyInfo: {
+    yearsExperience: number;
+    projectsCompleted: number;
+    clientSatisfaction: number;
+  };
 }
 
-export default function AdminPage() {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
+interface CompanyInfo extends DocumentData {
+  yearsExperience: number;
+  projectsCompleted: number;
+  clientSatisfaction: number;
+}
+
+export default function AdminDashboard() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { auth } = useFirebase();
+  const [stats, setStats] = useState<Stats>({
+    projects: 0,
+    services: 0,
+    companyInfo: {
+      yearsExperience: 0,
+      projectsCompleted: 0,
+      clientSatisfaction: 0,
+    },
+  });
 
   useEffect(() => {
-    async function fetchSubmissions() {
-      try {
-        // In a real application, you would check if the user is authenticated here
-        // For now, we're just fetching the data without authentication
-
-        const result = await getRecentContactSubmissions(20);
-        if (result.success) {
-          setSubmissions(result.submissions as Submission[]);
-        } else {
-          setError('Failed to load submissions');
-        }
-      } catch (err) {
-        console.error('Error fetching submissions:', err);
-        setError('Something went wrong');
-      } finally {
-        setLoading(false);
+    // Check authentication status
+    if (!auth) return;
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to login if not authenticated
+        router.push('/admin/login');
+        return;
       }
+
+      // If authenticated, fetch stats
+      fetchStats();
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  async function fetchStats() {
+    try {
+      if (!db) throw new Error('Database not initialized');
+
+      const [projectsSnap, servicesSnap, companyInfoSnap] = await Promise.all([
+        getDocs(collection(db, 'projects')),
+        getDocs(collection(db, 'services')),
+        getDocs(collection(db, 'companyInfo')),
+      ]);
+
+      const companyInfo = companyInfoSnap.docs[0]?.data() as CompanyInfo || {
+        yearsExperience: 0,
+        projectsCompleted: 0,
+        clientSatisfaction: 0,
+      };
+
+      setStats({
+        projects: projectsSnap.size,
+        services: servicesSnap.size,
+        companyInfo,
+      });
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      setError('Failed to fetch dashboard statistics');
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    fetchSubmissions();
-  }, []);
-
-  const formatDate = (timestamp: Timestamp) => {
-    return new Date(timestamp.seconds * 1000).toLocaleString();
-  };
+  if (isLoading) {
+    return (
+      <div className="animate-pulse">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-gray-light dark:from-background dark:to-gray-dark p-6">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-        
-        <div className="bg-white/90 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg backdrop-blur-sm">
-          <h2 className="text-2xl font-bold mb-6">Contact Form Submissions</h2>
-          
-          {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-            </div>
-          ) : error ? (
-            <div className="text-red-500 text-center p-4">{error}</div>
-          ) : submissions.length === 0 ? (
-            <div className="text-center p-8 text-gray-500">No submissions yet</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto">
-                <thead>
-                  <tr className="border-b-2 border-gray-200 dark:border-gray-700">
-                    <th className="px-4 py-2 text-left">Name</th>
-                    <th className="px-4 py-2 text-left">Email</th>
-                    <th className="px-4 py-2 text-left">Subject</th>
-                    <th className="px-4 py-2 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissions.map((submission) => (
-                    <tr 
-                      key={submission.id} 
-                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
-                    >
-                      <td className="px-4 py-3">
-                        {submission.firstName} {submission.lastName}
-                      </td>
-                      <td className="px-4 py-3">{submission.email}</td>
-                      <td className="px-4 py-3">{submission.subject}</td>
-                      <td className="px-4 py-3">
-                        {submission.createdAt ? formatDate(submission.createdAt) : 'N/A'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+    <div>
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
+          {error}
         </div>
-        
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Note: In a production application, this page would be protected with authentication.
-        </p>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Projects Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Projects</h2>
+            <Link
+              href="/admin/projects"
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              View All
+            </Link>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.projects}</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Total Projects</p>
+        </div>
+
+        {/* Services Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Services</h2>
+            <Link
+              href="/admin/services"
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              View All
+            </Link>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.services}</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Active Services</p>
+        </div>
+
+        {/* Client Satisfaction Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Client Satisfaction</h2>
+            <Link
+              href="/admin/company"
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              Update
+            </Link>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {stats.companyInfo.clientSatisfaction}%
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Average Rating</p>
+        </div>
+
+        {/* Years Experience Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Experience</h2>
+            <Link
+              href="/admin/company"
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              Update
+            </Link>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {stats.companyInfo.yearsExperience}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Years of Experience</p>
+        </div>
+
+        {/* Projects Completed Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Completed</h2>
+            <Link
+              href="/admin/company"
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              Update
+            </Link>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {stats.companyInfo.projectsCompleted}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Projects Completed</p>
+        </div>
+
+        {/* Quick Actions Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+          <div className="space-y-2">
+            <Link
+              href="/admin/projects/new"
+              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add New Project
+            </Link>
+            <Link
+              href="/admin/services/new"
+              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add New Service
+            </Link>
+            <Link
+              href="/admin/contact"
+              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              Update Contact Info
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

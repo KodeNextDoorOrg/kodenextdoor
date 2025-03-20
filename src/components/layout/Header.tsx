@@ -77,13 +77,13 @@ export default function Header() {
                 </motion.span>
               </Link>
             ))}
-            <Link href="#contact">
+            <Link href="/admin">
               <motion.button
-                className="px-5 py-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors"
+                className="px-5 py-2 bg-gray-800 text-white dark:bg-gray-700 rounded-full hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Contact Us
+                Admin Portal
               </motion.button>
             </Link>
           </nav>
@@ -149,11 +149,11 @@ export default function Header() {
                   className="pt-2 pb-4"
                 >
                   <Link 
-                    href="#contact"
-                    className="block w-full py-3 px-4 bg-primary text-white rounded-md text-center"
+                    href="/admin"
+                    className="block w-full py-3 px-4 bg-gray-800 text-white dark:bg-gray-700 rounded-md text-center"
                     onClick={handleNavLinkClick}
                   >
-                    Contact Us
+                    Admin Portal
                   </Link>
                 </motion.div>
               </div>

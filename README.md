@@ -1,85 +1,121 @@
-# KodeNextDoor - Tech Consultancy Website
+# KodeNextDoor - Modern Web Agency Website
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A modern, responsive website for a web development agency built with Next.js, Tailwind CSS, Framer Motion, and Firebase.
 
-## Firebase Integration
+## Features
 
-This project uses Firebase for the following features:
-- Firestore Database for contact form submissions
-- Firebase Analytics for tracking website usage
-- Authentication (setup ready, but not implemented yet)
-- Storage (setup ready, but not implemented yet)
-
-### Firebase Setup
-
-1. Create a `.env.local` file in the root directory with the following environment variables:
-```
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
-```
-
-2. Make sure you have created a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-
-3. Enable the services you need in your Firebase project:
-   - Firestore Database
-   - Authentication
-   - Storage
-   - Analytics
-
-4. Create the necessary Firestore collections:
-   - `contactSubmissions` - for storing contact form data
+- 🔥 Firebase integration for dynamic content
+- 🎨 Modern, responsive design
+- 🚀 Server-side rendering with Next.js 14
+- 🧰 Tailwind CSS for styling
+- 🎬 Smooth animations with Framer Motion
+- 🔐 Admin dashboard for content management
+- 📱 Mobile-friendly interface
+- 🌙 Dark mode support
 
 ## Getting Started
 
-First, install the dependencies:
+### Prerequisites
 
+- Node.js 18+ and npm/yarn
+- Firebase account
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/kodenextdoor.git
+cd kodenextdoor
+```
+
+2. Install dependencies
 ```bash
 npm install
 # or
 yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then, run the development server:
+3. Set up Firebase:
+   - Create a new Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+   - Enable Firestore Database
+   - Enable Authentication (Email/Password at minimum)
+   - Enable Storage (for images)
+   
+4. Create a `.env.local` file based on the `.env.local.example`:
+```bash
+cp .env.local.example .env.local
+```
 
+5. Update the `.env.local` file with your Firebase project details:
+   - Get your Firebase configuration from Project Settings > General > Your apps > Web app
+
+6. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Firebase Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Firestore Collections
 
-## Learn More
+The application uses the following Firestore collections:
 
-To learn more about Next.js and Firebase, take a look at the following resources:
+- `projects`: Portfolio project items
+- `services`: Service offerings
+- `companyStats`: Company statistics
+- `contactInfo`: Contact information
+- `businessHours`: Business hours
+- `contactSubmissions`: Form submissions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Firebase Documentation](https://firebase.google.com/docs) - learn about Firebase features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Firebase API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application provides a modular API for interacting with Firebase:
 
-## Deploy on Vercel
+```javascript
+// Import the Firebase API
+import { FirebaseAPI } from '@/lib/firebase';
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+// Example: Fetch all projects
+const { success, projects } = await FirebaseAPI.getAllProjects();
 
-When deploying to Vercel, make sure to add the Firebase environment variables in the Vercel project settings.
+// Example: Add a new contact submission
+const { success, id } = await FirebaseAPI.saveContactSubmission({
+  name: 'John Doe',
+  email: 'john@example.com',
+  phone: '123-456-7890',
+  message: 'Hello, I need a website!',
+  isRead: false,
+});
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin Dashboard
+
+The admin dashboard is available at `/admin` and allows you to:
+
+- Manage projects
+- Manage services
+- Update company stats
+- View and manage contact form submissions
+
+## Deployment
+
+### Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+
+1. Push your code to GitHub
+2. Import your repository in Vercel
+3. Add your environment variables
+4. Deploy!
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

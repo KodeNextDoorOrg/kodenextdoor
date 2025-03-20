@@ -1,432 +1,336 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { 
-  EnvelopeIcon, 
-  PhoneIcon, 
-  MapPinIcon, 
-  ClockIcon 
-} from '@heroicons/react/24/outline';
-import { Section, Container, Heading, Text, Button, Grid } from '@/components/ui';
-import { Input, Textarea, FormLabel, FormControl } from '@/components/ui/Form';
-import { saveContactSubmission } from '@/lib/firestore';
-
-interface FormState {
-  firstName: string;
-  lastName: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-// Contact information
-const contactInfo = [
-  {
-    icon: <EnvelopeIcon className="w-6 h-6" />,
-    title: 'Email Us',
-    details: 'info@kodenextdoor.com',
-    link: 'mailto:info@kodenextdoor.com'
-  },
-  {
-    icon: <PhoneIcon className="w-6 h-6" />,
-    title: 'Call Us',
-    details: '+1 (555) 123-4567',
-    link: 'tel:+15551234567'
-  },
-  {
-    icon: <MapPinIcon className="w-6 h-6" />,
-    title: 'Office',
-    details: '123 Tech Street, SF',
-    link: 'https://maps.google.com'
-  }
-];
-
-// Business hours
-const businessHours = [
-  { day: 'Monday - Friday', hours: '9:00 AM - 6:00 PM' },
-  { day: 'Saturday', hours: '10:00 AM - 4:00 PM' },
-  { day: 'Sunday', hours: 'Closed' }
-];
+import { useState, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Section, Container, Heading, Text, Button } from '@/components/ui';
+import * as FirebaseAPI from '@/lib/firebase/api/contactSubmissions';
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState<FormState>({
-    firstName: '',
-    lastName: '',
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    subject: '',
-    message: ''
+    phone: '',
+    message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
   
-  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 150]);
   
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
   
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!formData.email || !formData.message) {
-      setError('Please fill in all required fields');
-      return;
-    }
-    
-    // Reset error
-    setError(null);
+    // Reset status
     setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage(null);
     
     try {
-      // Save form data to Firebase
-      const result = await saveContactSubmission(formData);
+      // Submit to Firebase
+      const result = await FirebaseAPI.saveContactSubmission({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null, // Make phone optional
+        message: formData.message,
+        isRead: false,
+        createdAt: new Date(), // This will be converted to serverTimestamp in the API
+      });
       
       if (result.success) {
-        setIsSubmitted(true);
+        // Success handling
+        setSubmitStatus('success');
+        // Reset form
         setFormData({
-          firstName: '',
-          lastName: '',
+          name: '',
           email: '',
-          subject: '',
-          message: ''
+          phone: '',
+          message: '',
         });
       } else {
-        setError('Something went wrong. Please try again later.');
+        // Error handling
+        setSubmitStatus('error');
+        setErrorMessage(result.error || 'Failed to submit your message. Please try again.');
       }
-    } catch (err) {
-      console.error('Error submitting form:', err);
-      setError('Something went wrong. Please try again later.');
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setSubmitStatus('error');
+      setErrorMessage('An unexpected error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
   };
   
-  // Form field animation variants
-  const formFieldVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1, 
-      y: 0,
-      transition: {
-        delay: 0.1 * i,
-        duration: 0.4,
-        ease: "easeOut"
-      }
-    })
-  };
-  
-  // Form fields configuration
-  const formItems = [
-    { name: 'firstName', label: 'First Name', type: 'text', required: true, half: true, index: 0 },
-    { name: 'lastName', label: 'Last Name', type: 'text', required: true, half: true, index: 1 },
-    { name: 'email', label: 'Email Address', type: 'email', required: true, half: false, index: 2 },
-    { name: 'subject', label: 'Subject', type: 'text', required: true, half: false, index: 3 },
-    { name: 'message', label: 'Message', type: 'textarea', required: true, half: false, index: 4 }
-  ];
-  
   return (
-    <Section 
+    <Section
       id="contact" 
-      className="relative min-h-screen overflow-hidden py-24"
+      className="relative overflow-hidden py-24 bg-gray-50 dark:bg-gray-900"
       ref={ref}
     >
-      {/* Animated background elements */}
+      {/* Animated background */}
       <motion.div 
-        className="absolute inset-0 -z-10 opacity-40"
+        className="absolute inset-0 -z-10 opacity-40 pointer-events-none"
         style={{ y: backgroundY }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-gray-800/20 dark:from-gray-900/40 dark:to-gray-950/30" />
-        
-        {/* Animated blobs */}
-        <motion.div 
-          className="absolute top-10 left-10 w-96 h-96 rounded-full bg-primary/20 blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            x: [0, 30, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        
-        <motion.div 
-          className="absolute bottom-40 right-20 w-80 h-80 rounded-full bg-secondary/20 blur-3xl"
-          animate={{ 
-            scale: [1, 1.3, 1],
-            x: [0, -40, 0],
-            y: [0, 40, 0],
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-        
-        {/* Grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{ 
-            backgroundImage: 'radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '30px 30px'
-          }}
-        />
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/5 to-transparent" />
+        <div className="absolute top-40 left-10 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-purple-500/10 blur-3xl" />
       </motion.div>
       
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.span 
-            className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block"
-            initial={{ opacity: 0, scale: 0.5 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 500, damping: 20, delay: 0.1 }}
-          >
-            GET IN TOUCH
-          </motion.span>
-          
-          <Heading 
-            level="h2" 
-            className="mb-6 text-4xl md:text-5xl font-bold" 
-            withGradient
-            withAnimation
-          >
-            Let&apos;s Start a <span className="text-gradient">Conversation</span>
-          </Heading>
-          
-          <Text 
-            variant="light" 
-            className="max-w-2xl mx-auto mb-12 text-lg"
-          >
-            Have a project in mind or want to learn more about our services? We&apos;re here to help. Reach out and let&apos;s discuss how we can bring your vision to life.
-          </Text>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Contact form */}
-          <motion.div 
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700"
-            initial={{ opacity: 0, x: -50 }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+          {/* Contact info */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Send us a message</h3>
-            
-            {isSubmitted ? (
-              <motion.div 
-                className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+            <div className="mb-12">
+              <motion.span 
+                className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
               >
-                <svg 
-                  className="w-16 h-16 text-green-500 mx-auto mb-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
-                  />
-                </svg>
-                <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Thank you!</h4>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Your message has been sent successfully. We&apos;ll get back to you as soon as possible.
-                </p>
-              </motion.div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {formItems.map((item) => (
-                    <motion.div 
-                      key={item.name} 
-                      className={item.half ? "" : "md:col-span-2"}
-                      variants={formFieldVariants}
-                      custom={item.index}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                    >
-                      {item.type === 'textarea' ? (
-                        <FormControl>
-                          <FormLabel htmlFor={item.name} required={item.required}>{item.label}</FormLabel>
-                          <Textarea
-                            id={item.name}
-                            name={item.name}
-                            required={item.required}
-                            value={formData[item.name as keyof FormState]}
-                            onChange={handleChange}
-                            className="h-40"
-                          />
-                        </FormControl>
-                      ) : (
-                        <FormControl>
-                          <FormLabel htmlFor={item.name} required={item.required}>{item.label}</FormLabel>
-                          <Input
-                            id={item.name}
-                            name={item.name}
-                            type={item.type}
-                            required={item.required}
-                            value={formData[item.name as keyof FormState]}
-                            onChange={handleChange}
-                          />
-                        </FormControl>
-                      )}
-                    </motion.div>
-                  ))}
+                GET IN TOUCH
+              </motion.span>
+              
+              <Heading 
+                level="h2" 
+                className="mb-6 text-4xl md:text-5xl font-bold" 
+                withGradient
+                withAnimation
+              >
+                Let's Discuss Your <span className="text-gradient">Next Project</span>
+              </Heading>
+              
+              <Text 
+                variant="light" 
+                className="mb-8 text-lg"
+              >
+                Ready to transform your digital presence? We're excited to hear from you. 
+                Fill out the form and our team will get back to you within 24 hours.
+              </Text>
+            </div>
+            
+            {/* Contact methods */}
+            <div className="space-y-6">
+              <motion.div 
+                className="flex items-start space-x-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
                 </div>
-                
-                {error && (
-                  <motion.div 
-                    className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                  >
-                    <p>{error}</p>
-                  </motion.div>
-                )}
-                
-                <motion.div
-                  variants={formFieldVariants}
-                  custom={5}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="pt-2"
+                <div>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Email Us</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">We'll respond within 24 hours</p>
+                  <a href="mailto:hello@kodenextdoor.com" className="text-primary hover:text-primary-dark transition-colors">
+                    hello@kodenextdoor.com
+                  </a>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="flex items-start space-x-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Call Us</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">Mon-Fri from 8am to 5pm</p>
+                  <a href="tel:+1234567890" className="text-primary hover:text-primary-dark transition-colors">
+                    +1 (234) 567-890
+                  </a>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="flex items-start space-x-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Visit Us</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">Come say hello at our office</p>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    123 Innovation Street, Tech City, CA 94043
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+          
+          {/* Contact form */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="lg:pl-8"
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+              {submitStatus === 'success' ? (
+                <motion.div 
+                  className="text-center py-12"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
                 >
+                  <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Message Sent!</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    Thank you for contacting us. We'll get back to you soon!
+                  </p>
                   <Button 
-                    type="submit" 
-                    variant="primary" 
-                    size="lg" 
-                    className="w-full py-3 px-8"
+                    variant="secondary"
+                    onClick={() => setSubmitStatus('idle')}
+                  >
+                    Send Another Message
+                  </Button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Send us a message</h3>
+                  
+                  {/* Error message */}
+                  {submitStatus === 'error' && (
+                    <motion.div 
+                      className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 p-4 rounded-lg mb-4"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <div className="flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>{errorMessage || "Something went wrong. Please try again."}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Full Name
+                      </label>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        placeholder="John Doe"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="john@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+1 (234) 567-890"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows={4}
+                      placeholder="Tell us about your project..."
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    />
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full py-3"
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
-                </motion.div>
-              </form>
-            )}
-          </motion.div>
-          
-          {/* Contact information and map */}
-          <motion.div 
-            className="space-y-8"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {/* Contact cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {contactInfo.map((info, index) => (
-                <motion.a
-                  key={info.title}
-                  href={info.link}
-                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 md:p-6 flex flex-col items-center text-center shadow-lg border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl hover:-translate-y-1 min-h-[150px] justify-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-                  whileHover={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-                  }}
-                >
-                  <motion.div 
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    {info.icon}
-                  </motion.div>
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">{info.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm break-words w-full overflow-hidden">
-                    {info.details}
+                  
+                  <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+                    By submitting this form, you agree to our <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
                   </p>
-                </motion.a>
-              ))}
+                </form>
+              )}
             </div>
-            
-            {/* Business hours */}
-            <motion.div 
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
-              <div className="flex items-center gap-4 mb-5">
-                <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
-                  <ClockIcon className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Business Hours</h3>
-              </div>
-              
-              <ul className="space-y-3">
-                {businessHours.map((item, index) => (
-                  <motion.li 
-                    key={item.day}
-                    className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
-                  >
-                    <span className="text-gray-700 dark:text-gray-300 font-medium">{item.day}</span>
-                    <span className={`${item.hours === 'Closed' ? 'text-red-500' : 'text-gray-900 dark:text-white'} font-semibold`}>
-                      {item.hours}
-                    </span>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-            
-            {/* Map placeholder (in a real app, embed an actual map here) */}
-            <motion.div 
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 aspect-video h-64 flex items-center justify-center relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-                <div className="text-center px-6">
-                  <MapPinIcon className="w-12 h-12 text-primary mx-auto mb-3" />
-                  <p className="text-gray-800 dark:text-gray-200 font-medium mb-4">
-                    123 Tech Street, SF
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    href="https://maps.google.com"
-                    target="_blank"
-                    className="!text-sm"
-                  >
-                    Open in Google Maps
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </Container>
