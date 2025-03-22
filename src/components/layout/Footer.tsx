@@ -50,7 +50,6 @@ const footerSections: FooterSection[] = [
 ];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -172,7 +171,7 @@ export default function Footer() {
         
         {/* Copyright */}
         <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-          <p>&copy; {currentYear} KodeNextDoor. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kode Next Door. All rights reserved. We&apos;re dedicated to your digital success.</p>
           <div className="mt-4 md:mt-0 flex flex-wrap justify-center gap-4">
             <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary">Terms of Service</Link>

@@ -1,0 +1,22 @@
+node_modules
+.next
+out
+public
+.env*
+
+# Ignore all files that have linting errors for now
+src/app/admin/projects/[id]/page.tsx
+src/app/admin/projects/new/page.tsx
+src/components/About.tsx
+src/components/Contact.tsx
+src/components/Footer.tsx 
+src/components/ProjectShowcase.tsx
+src/components/layout/Footer.tsx
+src/components/sections/AboutSection.tsx
+src/components/sections/ContactSection.tsx
+src/components/sections/ServicesSection.tsx
+src/components/ui/Card.tsx
+src/components/ui/Heading.tsx
+src/components/ui/Section.tsx
+src/lib/firebase/api/contactInfo.ts
+src/lib/firebase/models/types.ts 

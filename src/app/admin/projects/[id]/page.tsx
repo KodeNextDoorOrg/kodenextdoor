@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Project } from '@/lib/firebase/models/types';
 import { updateProject } from '@/lib/firebase/api/projects';
 import Link from 'next/link';
+import { getProjectById } from '@/lib/firebase/api/projects';
+import { ProjectForm } from '@/components/admin/ProjectForm';
 
+// Use the standard interface for params in app router
 interface EditProjectPageProps {
   params: {
     id: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -82,8 +82,15 @@ const Text = forwardRef<HTMLParagraphElement, TextProps>(
   }, ref) => {
     const Component = as === 'p' ? motion.p : (as === 'span' ? motion.span : motion.div);
     
-    // Animation properties
-    const animationProps = withAnimation 
+    // Track if component is mounted (client-side) to prevent hydration mismatch
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+      setIsClient(true);
+    }, []);
+    
+    // Animation properties - only apply on client-side
+    const animationProps = withAnimation && isClient
       ? {
           initial: { opacity: 0, y: 10 },
           animate: { opacity: 1, y: 0 },

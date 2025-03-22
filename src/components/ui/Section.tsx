@@ -4,6 +4,7 @@ import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Container } from './Container';
+import { cn } from '@/lib/utils';
 
 const sectionVariants = cva(
   "relative overflow-hidden",
@@ -41,34 +42,25 @@ interface SectionProps
   containerSize?: "default" | "sm" | "md" | "lg" | "xl" | "full";
 }
 
-const Section = forwardRef<HTMLElement, SectionProps>(
-  ({ 
-    children, 
-    className, 
-    spacing, 
-    variant, 
-    as: Component = 'section', 
-    withContainer = true,
-    containerSize = "default",
-    ...props 
-  }, ref) => {
-    const content = withContainer ? (
-      <Container size={containerSize}>{children}</Container>
-    ) : (
-      children
-    );
-
-    return (
-      <motion.section
-        ref={ref}
-        className={sectionVariants({ spacing, variant, className })}
-        {...props}
-      >
-        {content}
-      </motion.section>
-    );
-  }
-);
+const Section = forwardRef<HTMLElement, SectionProps>(({
+  className,
+  variant,
+  as = 'section',
+  children,
+  ...props
+}, ref) => {
+  const Element = as;
+  
+  return (
+    <Element
+      ref={ref}
+      className={cn(sectionVariants({ variant }), className)}
+      {...props}
+    >
+      {children}
+    </Element>
+  );
+});
 
 Section.displayName = 'Section';
 

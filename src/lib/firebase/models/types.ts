@@ -172,4 +172,10 @@ export interface ContactSubmissionsResponse extends ApiResponse {
   submissions?: ContactSubmission[];
   submission?: ContactSubmission;
   id?: string;
+}
+
+export interface FirestoreDocument {
+  id: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
 } 

@@ -8,9 +8,9 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
-  serverTimestamp,
-  FirestoreError
+  Timestamp,
+  onSnapshot,
+  DocumentData
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ContactInfo, BusinessHour } from '../models/types';
@@ -42,16 +42,14 @@ export const saveContactInfo = async (
         github: contactInfo.socialMedia?.github || contactInfo.github || '',
         twitter: contactInfo.socialMedia?.twitter || contactInfo.twitter || '',
       },
-      updatedAt: serverTimestamp()
+      updatedAt: Timestamp.fromDate(new Date())
     };
 
     await updateDoc(doc(db, CONTACT_COLLECTION, CONTACT_DOC_ID), formattedContactInfo);
     return { success: true, id: CONTACT_DOC_ID };
   } catch (error) {
     console.error('Error saving contact info:', error);
-    const errorMessage = error instanceof FirestoreError 
-      ? error.message 
-      : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return { success: false, error: errorMessage };
   }
 };
@@ -108,7 +106,7 @@ export const getContactInfo = async (): Promise<ContactInfo | null> => {
  */
 export async function getAllContactInfo() {
   try {
-    const querySnapshot = await getDocs(contactInfoCollection);
+    const querySnapshot = await getDocs(collection(db, CONTACT_COLLECTION));
     const contactInfoList: ContactInfo[] = [];
     
     querySnapshot.forEach((doc) => {
@@ -132,7 +130,7 @@ export async function getAllContactInfo() {
     return { success: true, contactInfoList };
   } catch (error) {
     console.error('Error getting contact info:', error);
-    return { success: false, error };
+    return { success: false, error: error };
   }
 }
 
@@ -142,7 +140,7 @@ export async function getAllContactInfo() {
 export async function getContactInfoByType(type: 'email' | 'phone' | 'address') {
   try {
     const q = query(
-      contactInfoCollection,
+      collection(db, CONTACT_COLLECTION),
       where('type', '==', type)
     );
     
@@ -159,45 +157,23 @@ export async function getContactInfoByType(type: 'email' | 'phone' | 'address') 
     return { success: true, contactInfoList };
   } catch (error) {
     console.error('Error getting contact info by type:', error);
-    return { success: false, error };
+    return { success: false, error: error };
   }
 }
 
 /**
  * Update contact information
  */
-export const updateContactInfo = async (
-  id: string, 
-  updates: any
-): Promise<{ success: boolean; error?: string }> => {
+export const updateContactInfo = async (data: Partial<ContactInfo>): Promise<boolean> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
-
-    // Format the updates to match the expected structure
-    const formattedUpdates = {
-      email: updates.email,
-      phone: updates.phone,
-      address: updates.address,
-      googleMapsUrl: updates.googleMapsUrl,
-      socialLinks: {
-        facebook: updates.facebook || '',
-        twitter: updates.twitter || '',
-        instagram: updates.instagram || '',
-        linkedin: updates.linkedin || ''
-      },
-      updatedAt: serverTimestamp()
-    };
-
-    const docRef = doc(db, CONTACT_INFO_COLLECTION, id);
-    await updateDoc(docRef, formattedUpdates);
-
-    return { success: true };
+    
+    const contactInfoRef = doc(db, CONTACT_COLLECTION, CONTACT_DOC_ID);
+    await updateDoc(contactInfoRef, data);
+    return true;
   } catch (error) {
     console.error('Error updating contact info:', error);
-    const errorMessage = error instanceof FirestoreError 
-      ? error.message 
-      : 'An unknown error occurred';
-    return { success: false, error: errorMessage };
+    return false;
   }
 };
 
@@ -206,12 +182,12 @@ export const updateContactInfo = async (
  */
 export async function deleteContactInfo(id: string) {
   try {
-    const docRef = doc(db, CONTACT_INFO_COLLECTION, id);
+    const docRef = doc(db, CONTACT_COLLECTION, id);
     await deleteDoc(docRef);
     return { success: true };
   } catch (error) {
     console.error('Error deleting contact info:', error);
-    return { success: false, error };
+    return { success: false, error: error };
   }
 }
 
@@ -241,7 +217,7 @@ export const saveBusinessHours = async (
       const existingDoc = existingDocs.docs[0];
       await updateDoc(doc(db, BUSINESS_HOURS_COLLECTION, existingDoc.id), {
         ...businessHour,
-        updatedAt: serverTimestamp(),
+        updatedAt: Timestamp.fromDate(new Date()),
       });
       
       return { success: true, id: existingDoc.id };
@@ -250,16 +226,14 @@ export const saveBusinessHours = async (
     // Create new record
     const docRef = await addDoc(collection(db, BUSINESS_HOURS_COLLECTION), {
       ...businessHour,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     });
 
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error('Error saving business hours:', error);
-    const errorMessage = error instanceof FirestoreError 
-      ? error.message 
-      : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return { success: false, error: errorMessage };
   }
 };
@@ -330,15 +304,13 @@ export const updateBusinessHours = async (
     const docRef = doc(db, BUSINESS_HOURS_COLLECTION, id);
     await updateDoc(docRef, {
       ...updates,
-      updatedAt: serverTimestamp(),
+      updatedAt: Timestamp.fromDate(new Date()),
     });
 
     return { success: true };
   } catch (error) {
     console.error('Error updating business hours:', error);
-    const errorMessage = error instanceof FirestoreError 
-      ? error.message 
-      : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return { success: false, error: errorMessage };
   }
 };
@@ -354,9 +326,35 @@ export const deleteBusinessHours = async (id: string): Promise<{ success: boolea
     return { success: true };
   } catch (error) {
     console.error('Error deleting business hours:', error);
-    const errorMessage = error instanceof FirestoreError 
-      ? error.message 
-      : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return { success: false, error: errorMessage };
+  }
+};
+
+// Replace any types with more specific types
+export const updateContactSubmission = async (id: string, data: Partial<ContactInfo>): Promise<boolean> => {
+  try {
+    if (!db) throw new Error('Firestore is not initialized');
+    
+    const submissionRef = doc(db, 'contactSubmissions', id);
+    await updateDoc(submissionRef, data);
+    return true;
+  } catch (error) {
+    console.error('Error updating contact submission:', error);
+    return false;
+  }
+};
+
+// Replace any types with more specific types
+export const deleteContactSubmission = async (id: string): Promise<boolean> => {
+  try {
+    if (!db) throw new Error('Firestore is not initialized');
+    
+    const submissionRef = doc(db, 'contactSubmissions', id);
+    await deleteDoc(submissionRef);
+    return true;
+  } catch (error) {
+    console.error('Error deleting contact submission:', error);
+    return false;
   }
 }; 

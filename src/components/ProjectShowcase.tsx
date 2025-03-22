@@ -480,18 +480,8 @@ const ProjectShowcase = () => {
             OUR WORK
           </motion.span>
           
-          <h2 className="text-4xl font-bold mb-6 overflow-hidden perspective">
-            {titleWords.map((word, i) => (
-              <motion.span 
-                key={i} 
-                className="inline-block mx-1"
-                variants={titleWordVariants}
-              >
-                {word === "Projects" ? (
-                  <span className="text-gradient">{word}</span>
-                ) : word}
-              </motion.span>
-            ))}
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
+            See Why Our Clients Can&apos;t Stop Talking About Our Work
           </h2>
           
           <motion.p 

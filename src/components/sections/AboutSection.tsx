@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { Section, Container, Heading, Text, Grid, Button } from '@/components/ui';
+import { Section, Container, Heading, Text, Button } from '@/components/ui';
 import { getCompanyInfo, CompanyInfo } from '@/lib/firebase/api/companyInfo';
 
 interface Stat {
@@ -15,6 +14,12 @@ interface Stat {
 export default function AboutSection() {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+  
+  // Track if we're on client-side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   // Fetch company info on component mount
   useEffect(() => {
@@ -132,20 +137,30 @@ export default function AboutSection() {
           className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-3xl"
           style={{ y: y1 }}
           animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 3, 0],
+            scale: [1, 1.2],
+            rotate: [0, 3],
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ 
+            duration: 20, 
+            repeat: Infinity, 
+            repeatType: "reverse", 
+            ease: "easeInOut" 
+          }}
         />
         
         <motion.div 
           className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-secondary/10 blur-3xl"
           style={{ y: y2 }}
           animate={{ 
-            scale: [1, 1.3, 1],
-            rotate: [0, -3, 0],
+            scale: [1, 1.3],
+            rotate: [0, -3],
           }}
-          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ 
+            duration: 25, 
+            repeat: Infinity, 
+            repeatType: "reverse", 
+            ease: "easeInOut" 
+          }}
         />
         
         {/* Grid pattern for background texture */}
@@ -165,16 +180,14 @@ export default function AboutSection() {
             className="relative h-[500px] p-4 order-2 lg:order-1"
             style={{ opacity }}
             initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            animate={isClient ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
             {/* Main image */}
             <motion.div 
               className="absolute top-0 right-0 w-5/6 h-5/6 rounded-2xl overflow-hidden shadow-2xl"
               initial={{ opacity: 0, y: 50, rotateY: -10 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              viewport={{ once: true }}
+              animate={isClient ? { opacity: 1, y: 0, rotateY: 0 } : {}}
               transition={{ delay: 0.3, duration: 0.8 }}
               whileHover={{ scale: 1.03, rotateY: 5 }}
             >
@@ -188,8 +201,7 @@ export default function AboutSection() {
             <motion.div 
               className="absolute bottom-0 left-0 w-2/3 h-2/3 rounded-2xl overflow-hidden shadow-2xl z-10"
               initial={{ opacity: 0, y: 50, rotateY: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              viewport={{ once: true }}
+              animate={isClient ? { opacity: 1, y: 0, rotateY: 0 } : {}}
               transition={{ delay: 0.5, duration: 0.8 }}
               whileHover={{ scale: 1.05, rotateY: -5 }}
             >
@@ -203,15 +215,14 @@ export default function AboutSection() {
             <motion.div 
               className="absolute top-1/4 left-1/2 z-20 bg-white dark:bg-gray-800 shadow-xl rounded-full py-3 px-5 font-bold text-primary"
               initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+              animate={isClient ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
               animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, 0]
+                y: [0, -10],
+                rotate: [0, 5]
               }}
               transition={{
-                duration: 5,
+                duration: 2,
                 repeat: Infinity,
                 repeatType: "reverse"
               }}
@@ -225,8 +236,7 @@ export default function AboutSection() {
             className="order-1 lg:order-2"
             variants={containerVariants}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate={isClient ? "visible" : "hidden"}
           >
             <motion.span 
               className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block"
@@ -246,7 +256,7 @@ export default function AboutSection() {
             
             <motion.div className="space-y-6 mb-10" variants={itemVariants}>
               <Text variant="light" className="text-lg">
-                {companyInfo?.aboutUs || 'At Kode Next Door, we are a team of passionate developers, designers, and strategists dedicated to transforming ideas into exceptional digital solutions. Since 2014, we\'ve been at the forefront of technology innovation, helping businesses of all sizes achieve their digital goals.'}
+                {companyInfo?.aboutUs || 'At Kode Next Door, we are a team of passionate developers, designers, and strategists dedicated to transforming ideas into exceptional digital solutions. Since 2014, we&apos;ve been at the forefront of technology innovation, helping businesses of all sizes achieve their digital goals.'}
               </Text>
               
               <Text variant="light" className="text-lg">

@@ -1,8 +1,20 @@
 'use client';
 
+import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+
+// Define more specific types to replace 'any'
+type HTMLElementProps = React.HTMLAttributes<HTMLElement>;
+type ElementType = React.ElementType;
+type LinkProps = {
+  href: string;
+  target?: string;
+  rel?: string;
+};
 
 // Define card variants using class-variance-authority
 const cardVariants = cva(
@@ -40,16 +52,21 @@ const cardVariants = cva(
   }
 );
 
-interface CardProps extends VariantProps<typeof cardVariants> {
+// Define interfaces for the Card components
+interface CardProps extends HTMLElementProps, VariantProps<typeof cardVariants> {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
   whileInView?: any;
   initial?: any;
   animate?: any;
+  as?: ElementType;
+  href?: string;
+  target?: string;
+  rel?: string;
 }
 
-export function Card({
+const Card = forwardRef<HTMLDivElement, CardProps>(({
   children,
   variant,
   padding,
@@ -60,21 +77,33 @@ export function Card({
   whileInView,
   initial,
   animate,
+  as: Component = 'div',
+  href,
+  target,
+  rel,
   ...props
-}: CardProps) {
+}, ref) => {
+  const Comp = href ? 'a' : Component;
+  const linkProps: LinkProps | {} = href 
+    ? { href, target: target || '_blank', rel: rel || 'noopener noreferrer' } 
+    : {};
+
   return (
     <motion.div
-      className={cardVariants({ variant, padding, radius, animation, className })}
+      ref={ref}
+      className={cn(cardVariants({ variant, padding, radius, animation, className }))}
       onClick={onClick}
       whileInView={whileInView}
       initial={initial}
       animate={animate}
+      {...linkProps}
       {...props}
     >
       {children}
     </motion.div>
   );
-}
+});
+Card.displayName = 'Card';
 
 // Card components for flexibility
 Card.Header = function CardHeader({
@@ -137,24 +166,53 @@ Card.Footer = function CardFooter({
   );
 };
 
-Card.Image = function CardImage({
+interface CardMediaProps extends HTMLElementProps {
+  image: string;
+  alt: string;
+  aspectRatio?: '1:1' | '4:3' | '16:9' | '2:1';
+  fill?: boolean;
+  height?: number;
+  width?: number;
+}
+
+const CardMedia = forwardRef<HTMLDivElement, CardMediaProps>(({
   className,
-  src,
-  alt = "",
+  image,
+  alt,
+  aspectRatio = '16:9',
+  fill = false,
+  height,
+  width,
   ...props
-}: {
-  className?: string;
-  src: string;
-  alt?: string;
-}) {
+}, ref) => {
+  const aspectRatioClasses = {
+    '1:1': 'aspect-square',
+    '4:3': 'aspect-[4/3]',
+    '16:9': 'aspect-[16/9]',
+    '2:1': 'aspect-[2/1]',
+  };
+  
   return (
-    <img
-      src={src}
-      alt={alt}
-      className={`w-full object-cover ${className}`}
+    <div 
+      ref={ref}
+      className={cn(
+        "relative overflow-hidden bg-gray-100 dark:bg-gray-700",
+        !fill && aspectRatioClasses[aspectRatio],
+        className
+      )}
       {...props}
-    />
+    >
+      <Image
+        src={image}
+        alt={alt}
+        fill={fill}
+        width={!fill ? width || 1200 : undefined}
+        height={!fill ? height || 800 : undefined}
+        className="object-cover w-full h-full transition-transform duration-500 ease-in-out hover:scale-105"
+      />
+    </div>
   );
-};
+});
+CardMedia.displayName = 'CardMedia';
 
 export { cardVariants }; 

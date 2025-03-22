@@ -21,7 +21,7 @@ export default function ContactSection() {
   
   // Contact info state
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
-  const [isLoadingContact, setIsLoadingContact] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -42,7 +42,7 @@ export default function ContactSection() {
       } catch (error) {
         console.error('Error fetching contact info:', error);
       } finally {
-        setIsLoadingContact(false);
+        setIsLoading(false);
       }
     };
     
@@ -153,12 +153,12 @@ export default function ContactSection() {
                 Let's Discuss Your <span className="text-gradient">Next Project</span>
               </Heading>
               
-              <Text 
-                variant="light" 
-                className="mb-8 text-lg"
-              >
-                Ready to transform your digital presence? We're excited to hear from you. 
-                Fill out the form and our team will get back to you within 24 hours.
+              <Text variant="large" className="mb-6 text-gray-700 dark:text-gray-300 max-w-xl">
+                We&apos;re here to help with any questions about our services, potential collaborations, or how we can assist with your digital needs.
+              </Text>
+              
+              <Text className="mb-8 text-gray-600 dark:text-gray-400">
+                Let&apos;s start a conversation and discover how we can work together to achieve your goals.
               </Text>
             </div>
             
@@ -258,8 +258,8 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Message Sent!</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Thank you for contacting us. We'll get back to you soon!
+                  <p className="text-gray-700 dark:text-gray-300 mt-2">
+                    Thank you for your message! We&apos;ll get back to you as soon as possible.
                   </p>
                   <Button 
                     variant="secondary"

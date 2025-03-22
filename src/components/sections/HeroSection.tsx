@@ -1,11 +1,18 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Section, Container, Heading, Text, Button } from '@/components/ui';
 
 export default function HeroSection() {
   const ref = useRef(null);
+  // Store particles in state
+  const [particles, setParticles] = useState([]);
+  // Store any random delay values
+  const [randomDelays, setRandomDelays] = useState({
+    particleDelays: []
+  });
+  
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"]
@@ -16,6 +23,26 @@ export default function HeroSection() {
   const yBlob1 = useTransform(scrollYProgress, [0, 1], [0, -150]);
   const yBlob2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  
+  // Generate particles and any random values on client-side only to avoid hydration mismatch
+  useEffect(() => {
+    // Generate particle positions
+    const newParticles = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 1,
+      duration: Math.random() * 20 + 10
+    }));
+    
+    // Generate random delay values for animations
+    const newParticleDelays = Array.from({ length: 20 }, () => Math.random() * 5);
+    
+    setParticles(newParticles);
+    setRandomDelays({
+      particleDelays: newParticleDelays
+    });
+  }, []);
   
   // More dynamic fade in animation with staggering
   const containerVariants = {
@@ -48,15 +75,6 @@ export default function HeroSection() {
     "bg-gray-500",
     "bg-gray-600"
   ];
-
-  // Generate particle positions
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 1,
-    duration: Math.random() * 20 + 10
-  }));
 
   return (
     <Section 
@@ -96,14 +114,15 @@ export default function HeroSection() {
         <motion.div
           className="absolute -bottom-40 -left-40 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-secondary/20 to-secondary/5 blur-3xl"
           animate={{ 
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1],
-            rotate: [0, -5, 0] 
+            y: [0, -30],
+            scale: [1, 1.1],
+            rotate: [0, -5] 
           }}
           style={{ y: yBlob2 }}
           transition={{ 
             duration: 10, 
             repeat: Infinity,
+            repeatType: "reverse",
             ease: "easeInOut",
             delay: 1
           }}
@@ -126,8 +145,8 @@ export default function HeroSection() {
           }}
         />
         
-        {/* Floating particles */}
-        {particles.map((particle) => (
+        {/* Floating particles - Only render when particles array is populated */}
+        {particles.map((particle, index) => (
           <motion.div
             key={particle.id}
             className="absolute rounded-full bg-white opacity-70"
@@ -138,15 +157,16 @@ export default function HeroSection() {
               height: `${particle.size}px`,
             }}
             animate={{
-              y: [0, -30, 0],
-              opacity: [0, 0.7, 0],
-              scale: [0, 1, 0],
+              y: [0, -30],
+              opacity: [0, 0.7],
+              scale: [0, 1],
             }}
             transition={{
               duration: particle.duration,
               repeat: Infinity,
+              repeatType: "reverse",
               ease: "easeInOut",
-              delay: Math.random() * 5,
+              delay: randomDelays.particleDelays[index] || 0,
             }}
           />
         ))}
@@ -259,9 +279,13 @@ export default function HeroSection() {
                   Trusted by <motion.span 
                     className="text-primary"
                     animate={{ 
-                      scale: [1, 1.1, 1],
+                      scale: [1, 1.1]
                     }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    transition={{ 
+                      duration: 1.5, 
+                      repeat: Infinity,
+                      repeatType: "reverse" 
+                    }}
                   >200+</motion.span> clients worldwide
                 </motion.p>
               </div>
@@ -278,18 +302,28 @@ export default function HeroSection() {
               className="relative w-full h-[500px]"
               whileHover={{ scale: 1.03 }}
               animate={{ 
-                rotateX: [0, 2, 0, -2, 0],
-                rotateY: [0, -2, 0, 2, 0]
+                rotateX: [0, 2],
+                rotateY: [0, -2]
               }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ 
+                duration: 6, 
+                repeat: Infinity,
+                repeatType: "mirror", 
+                ease: "easeInOut" 
+              }}
             >
               <motion.div 
                 className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-primary/30 to-secondary/30 blur-2xl"
                 animate={{ 
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 1, 0]
+                  scale: [1, 1.05],
+                  rotate: [0, 1]
                 }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity, 
+                  repeatType: "reverse", 
+                  ease: "easeInOut" 
+                }}
               />
               <div className="relative w-full h-full rounded-2xl bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-800/90 dark:to-gray-900/70 p-6 backdrop-blur-sm border border-white/10 flex items-center justify-center overflow-hidden">
                 <div className="w-full max-w-md aspect-[4/3] relative">
@@ -309,10 +343,14 @@ export default function HeroSection() {
                     <motion.div 
                       className="h-3 w-3 rounded-full bg-green-400"
                       animate={{ 
-                        scale: [1, 1.2, 1],
-                        opacity: [0.7, 1, 0.7]
+                        scale: [1, 1.2],
+                        opacity: [0.7, 1]
                       }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      transition={{ 
+                        duration: 2, 
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
                     />
                   </motion.div>
                   
@@ -342,9 +380,13 @@ export default function HeroSection() {
                     <motion.div 
                       className="h-3 w-[60%] bg-white/20 rounded-full"
                       animate={{ 
-                        width: ['30%', '60%', '45%', '60%'],
+                        width: ['30%', '60%']
                       }}
-                      transition={{ duration: 6, repeat: Infinity, repeatType: 'reverse' }}
+                      transition={{ 
+                        duration: 4, 
+                        repeat: Infinity, 
+                        repeatType: 'reverse' 
+                      }}
                     />
                   </div>
                 </div>
@@ -361,15 +403,20 @@ export default function HeroSection() {
               <div className="flex items-center mb-2">
                 <motion.div 
                   className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  animate={{ scale: [1, 1.1] }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
                 >+135%</motion.div>
                 <motion.div
                   className="ml-2 w-4 h-4"
-                  animate={{ y: [-2, 2, -2] }}
+                  animate={{ y: [-2, 2] }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
+                    repeatType: "reverse",
                     ease: "easeInOut"
                   }}
                 >
@@ -392,10 +439,15 @@ export default function HeroSection() {
                 <motion.div 
                   className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-secondary/20 to-secondary/10 text-secondary"
                   animate={{ 
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 5, 0],
+                    scale: [1, 1.2],
+                    rotate: [0, 5]
                   }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    repeatType: "reverse", 
+                    ease: "easeInOut" 
+                  }}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                     <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-9.618 5.04L12 21.084l9.618-13.1A11.955 11.955 0 0112 2.944z" 

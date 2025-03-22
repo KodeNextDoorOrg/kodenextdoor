@@ -1,8 +1,10 @@
 'use client';
 
-import { createElement, forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import { createElement, forwardRef, useState, useEffect } from 'react';
+import { motion, MotionProps } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+import React from 'react';
 
 // Define heading variants
 const headingVariants = cva(
@@ -42,12 +44,15 @@ const headingVariants = cva(
   }
 );
 
-interface HeadingProps 
-  extends Omit<React.HTMLAttributes<HTMLHeadingElement>, 'color'>,
+export interface HeadingProps
+  extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof headingVariants> {
+  level?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   children: React.ReactNode;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   withAnimation?: boolean;
+  withGradient?: boolean;
+  animationDelay?: number;
+  motionProps?: MotionProps;
 }
 
 const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
@@ -60,8 +65,18 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     responsive,
     as,
     withAnimation = false,
+    withGradient = false,
+    animationDelay = 0,
+    motionProps,
     ...props 
   }, ref) => {
+    // Track if we're on client-side to prevent hydration issues
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+      setIsClient(true);
+    }, []);
+    
     // Default animations for headings
     const animations = {
       initial: { opacity: 0, y: 10 },
@@ -76,10 +91,15 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     if (variant === 'gradient') {
       const gradientAnimation = {
         animate: { 
-          backgroundSize: ["100%", "200%", "100%"],
-          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
+          backgroundSize: ["100%", "200%"],
+          backgroundPosition: ["0% 0%", "100% 100%"]
         },
-        transition: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+        transition: { 
+          duration: 5, 
+          repeat: Infinity, 
+          repeatType: "reverse",
+          ease: "easeInOut" 
+        }
       };
 
       return createElement(
@@ -87,14 +107,15 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
         {
           ref,
           className: headingVariants({ level, variant, align, responsive, className }),
-          initial: withAnimation ? animations.initial : undefined,
-          animate: withAnimation 
+          initial: withAnimation && isClient ? animations.initial : undefined,
+          animate: withAnimation && isClient
             ? { ...animations.animate, ...gradientAnimation.animate } 
-            : gradientAnimation.animate,
-          transition: withAnimation 
+            : isClient ? gradientAnimation.animate : undefined,
+          transition: withAnimation
             ? animations.transition 
             : gradientAnimation.transition,
-          ...props
+          ...props,
+          ...motionProps
         },
         children
       );
@@ -105,10 +126,11 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       {
         ref,
         className: headingVariants({ level, variant, align, responsive, className }),
-        initial: withAnimation ? animations.initial : undefined,
-        animate: withAnimation ? animations.animate : undefined,
+        initial: withAnimation && isClient ? animations.initial : undefined,
+        animate: withAnimation && isClient ? animations.animate : undefined,
         transition: withAnimation ? animations.transition : undefined,
-        ...props
+        ...props,
+        ...motionProps
       },
       children
     );

@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   setPersistence,
   browserLocalPersistence,
+  signOut,
 } from 'firebase/auth';
 import { 
   getDoc,
@@ -22,7 +23,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   // Handle login 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -33,31 +34,38 @@ export default function LoginPage() {
       
       // Sign in with Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const { user } = userCredential;
-
-      // Check if user is admin
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
       
-      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
-        throw new Error('Access denied: Not an admin account');
+      if (!userCredential.user) {
+        throw new Error('No user found');
+      }
+
+      // Check if the user is an admin
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      if (!userDoc.exists() || !userDoc.data().isAdmin) {
+        await signOut(auth);
+        throw new Error('Unauthorized access');
       }
 
       // Redirect to admin dashboard
-      router.push('/admin');
+      router.push('/admin/dashboard');
       
-    } catch (err: any) {
-      console.error('Login error:', err);
+    } catch (error) {
+      // Replace 'any' with a more specific type
+      const firebaseError = error as { code?: string, message: string };
       
-      // Handle specific error messages
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid email or password');
-      } else if (err.code === 'auth/too-many-requests') {
-        setError('Too many failed login attempts. Please try again later');
-      } else if (err.code === 'auth/user-disabled') {
-        setError('This account has been disabled');
-      } else {
-        setError(err.message || 'Failed to log in');
-      }
+      const errorMap: Record<string, string> = {
+        'auth/invalid-email': 'Invalid email address.',
+        'auth/user-disabled': 'This account has been disabled.',
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/too-many-requests': 'Too many failed login attempts. Please try again later.'
+      };
+
+      setError(
+        firebaseError.code && errorMap[firebaseError.code]
+          ? errorMap[firebaseError.code]
+          : firebaseError.message || 'Failed to login. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }

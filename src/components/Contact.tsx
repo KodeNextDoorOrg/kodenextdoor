@@ -7,7 +7,7 @@ import { saveContactSubmission } from '@/lib/firestore';
 import { getContactInfo } from '@/lib/firebase/api/contactInfo';
 import { ContactInfo } from '@/lib/firebase/models/types';
 
-const Contact = () => {
+export default function Contact() {
   const [formState, setFormState] = useState({
     firstName: '',
     lastName: '',
@@ -21,7 +21,7 @@ const Contact = () => {
   
   // Contact info state
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
-  const [isLoadingContact, setIsLoadingContact] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Fetch contact information
   useEffect(() => {
@@ -32,7 +32,7 @@ const Contact = () => {
       } catch (error) {
         console.error('Error fetching contact info:', error);
       } finally {
-        setIsLoadingContact(false);
+        setIsLoading(false);
       }
     };
     
@@ -219,7 +219,7 @@ const Contact = () => {
                 transition={{ duration: 0.3 }}
               >
                 <p className="text-lg font-medium">Thank you for your message!</p>
-                <p className="mt-2">We'll get back to you soon.</p>
+                <p className="mt-2">We&apos;ll get back to you as soon as possible.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -318,6 +318,4 @@ const Contact = () => {
       </div>
     </section>
   );
-};
-
-export default Contact; 
+} 

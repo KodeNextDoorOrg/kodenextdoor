@@ -76,6 +76,9 @@ const About = () => {
               <p className="text-text-light mb-8">
                 Founded in 2010, KodeNextDoor has been at the forefront of digital transformation, helping businesses of all sizes harness the power of technology to drive growth and innovation. 
               </p>
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
+                At Kode Next Door, we&apos;re passionate about creating innovative digital solutions that help businesses thrive.
+              </p>
               <p className="text-text-light mb-8">
                 Our team of experts combines deep technical knowledge with strategic thinking to deliver customized solutions that meet the unique needs of each client. We believe in building lasting partnerships and are committed to your success.
               </p>

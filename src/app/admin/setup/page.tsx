@@ -112,29 +112,22 @@ export default function SetupPage() {
         router.push('/admin');
       }, 2000);
 
-    } catch (err: any) {
-      console.error('Error in setup:', err);
+    } catch (error) {
+      const firebaseError = error as { code?: string, message: string };
       
-      // Handle specific error messages
-      if (err.code === 'auth/email-already-in-use') {
-        setError('This email is already in use');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email format');
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password is too weak');
-      } else {
-        setError(err.message || 'Failed to create admin account');
-      }
-
-      // Try to clean up if there was an error
-      try {
-        if (auth.currentUser) {
-          await auth.currentUser.delete();
-        }
-      } catch (deleteErr) {
-        console.error('Error cleaning up after setup failure:', deleteErr);
-      }
-    } finally {
+      const errorMap: Record<string, string> = {
+        'auth/email-already-in-use': 'This email is already registered.',
+        'auth/invalid-email': 'Please provide a valid email address.',
+        'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
+        'auth/operation-not-allowed': 'Account creation is disabled.',
+        'permission-denied': 'You do not have permission to create an admin account.'
+      };
+      
+      setError(
+        firebaseError.code && errorMap[firebaseError.code]
+          ? errorMap[firebaseError.code]
+          : firebaseError.message || 'Failed to create account. Please try again.'
+      );
       setIsLoading(false);
     }
   };
