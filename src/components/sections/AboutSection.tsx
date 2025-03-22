@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Section, Container, Heading, Text, Grid, Button } from '@/components/ui';
+import { getCompanyInfo, CompanyInfo } from '@/lib/firebase/api/companyInfo';
 
 interface Stat {
   value: string;
@@ -11,14 +12,50 @@ interface Stat {
   color: string;
 }
 
-const stats: Stat[] = [
-  { value: '10+', label: 'Years Experience', color: 'from-indigo-500 to-purple-500' },
-  { value: '150+', label: 'Projects Completed', color: 'from-blue-500 to-teal-500' },
-  { value: '95%', label: 'Client Satisfaction', color: 'from-green-500 to-emerald-500' },
-  { value: '24/7', label: 'Support Available', color: 'from-amber-500 to-orange-500' },
-];
-
 export default function AboutSection() {
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch company info on component mount
+  useEffect(() => {
+    const fetchCompanyInfo = async () => {
+      try {
+        const info = await getCompanyInfo();
+        setCompanyInfo(info);
+      } catch (error) {
+        console.error('Error fetching company info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchCompanyInfo();
+  }, []);
+  
+  // Generate stats array from company info
+  const stats: Stat[] = [
+    { 
+      value: companyInfo?.yearsExperience ? `${companyInfo.yearsExperience}+` : '10+', 
+      label: 'Years Experience', 
+      color: 'from-indigo-500 to-purple-500' 
+    },
+    { 
+      value: companyInfo?.projectsCompleted ? `${companyInfo.projectsCompleted}+` : '150+', 
+      label: 'Projects Completed', 
+      color: 'from-blue-500 to-teal-500' 
+    },
+    { 
+      value: companyInfo?.clientSatisfaction ? `${companyInfo.clientSatisfaction}%` : '95%', 
+      label: 'Client Satisfaction', 
+      color: 'from-green-500 to-emerald-500' 
+    },
+    { 
+      value: '24/7', 
+      label: 'Support Available', 
+      color: 'from-amber-500 to-orange-500' 
+    },
+  ];
+  
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const { scrollYProgress } = useScroll({
@@ -54,6 +91,30 @@ export default function AboutSection() {
       }
     }
   };
+  
+  // Display loading skeleton if data is still loading
+  if (isLoading) {
+    return (
+      <Section id="about" className="relative overflow-hidden py-24">
+        <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="relative h-[500px] p-4 order-2 lg:order-1 animate-pulse">
+              <div className="absolute top-0 right-0 w-5/6 h-5/6 rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700"></div>
+              <div className="absolute bottom-0 left-0 w-2/3 h-2/3 rounded-2xl overflow-hidden bg-gray-300 dark:bg-gray-800"></div>
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+              <div className="h-10 bg-gray-300 dark:bg-gray-800 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+              <div className="h-10 bg-gray-300 dark:bg-gray-800 rounded w-40"></div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
   
   return (
     <Section 
@@ -185,11 +246,11 @@ export default function AboutSection() {
             
             <motion.div className="space-y-6 mb-10" variants={itemVariants}>
               <Text variant="light" className="text-lg">
-                At Kode Next Door, we are a team of passionate developers, designers, and strategists dedicated to transforming ideas into exceptional digital solutions. Since 2014, we've been at the forefront of technology innovation, helping businesses of all sizes achieve their digital goals.
+                {companyInfo?.aboutUs || 'At Kode Next Door, we are a team of passionate developers, designers, and strategists dedicated to transforming ideas into exceptional digital solutions. Since 2014, we\'ve been at the forefront of technology innovation, helping businesses of all sizes achieve their digital goals.'}
               </Text>
               
               <Text variant="light" className="text-lg">
-                Our approach combines technical expertise with creative thinking to deliver solutions that not only meet your needs today but adapt to your challenges tomorrow. We believe in collaborative partnerships, transparent processes, and delivering results that exceed expectations.
+                {companyInfo?.mission || 'Our approach combines technical expertise with creative thinking to deliver solutions that not only meet your needs today but adapt to your challenges tomorrow. We believe in collaborative partnerships, transparent processes, and delivering results that exceed expectations.'}
               </Text>
             </motion.div>
             
@@ -204,28 +265,24 @@ export default function AboutSection() {
               </Button>
             </motion.div>
             
-            {/* Stats section */}
+            {/* Stats */}
             <motion.div 
               className="grid grid-cols-2 gap-6"
-              variants={containerVariants}
+              variants={itemVariants}
             >
               {stats.map((stat, index) => (
                 <motion.div 
-                  key={stat.label}
-                  className="p-6 rounded-xl bg-white/70 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 shadow-lg"
-                  variants={itemVariants}
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: "0px 15px 30px rgba(0,0,0,0.1)",
-                    transition: { type: "spring", stiffness: 400, damping: 10 }
-                  }}
-                  custom={index}
+                  key={index}
+                  className="relative group"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <div className={`text-4xl font-bold mb-2 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                    {stat.value}
-                  </div>
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                    {stat.label}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 blur-xl group-hover:opacity-100 transition-opacity" />
+                  <div className="relative p-6 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+                    <h3 className={`text-3xl font-bold mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
+                      {stat.value}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">{stat.label}</p>
                   </div>
                 </motion.div>
               ))}

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { saveContactSubmission } from '@/lib/firestore';
+import { getContactInfo } from '@/lib/firebase/api/contactInfo';
+import { ContactInfo } from '@/lib/firebase/models/types';
 
 const Contact = () => {
   const [formState, setFormState] = useState({
@@ -16,6 +18,26 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Contact info state
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [isLoadingContact, setIsLoadingContact] = useState(true);
+  
+  // Fetch contact information
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const info = await getContactInfo();
+        setContactInfo(info);
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      } finally {
+        setIsLoadingContact(false);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormState({
@@ -53,24 +75,29 @@ const Contact = () => {
     }
   };
 
-  const contactInfo = [
+  // Generate contact info with database values or fallbacks
+  const getContactInfoItems = () => [
     {
       icon: <EnvelopeIcon className="w-6 h-6" />,
       title: 'Email',
-      details: 'hello@kodenextdoor.com',
-      link: 'mailto:hello@kodenextdoor.com',
+      details: contactInfo?.email || 'info@kodenextdoor.com',
+      link: `mailto:${contactInfo?.email || 'info@kodenextdoor.com'}`,
     },
     {
       icon: <PhoneIcon className="w-6 h-6" />,
       title: 'Phone',
-      details: '+1 (555) 123-4567',
-      link: 'tel:+15551234567',
+      details: [
+        contactInfo?.phone || '314-665-4673',
+        `Weekdays: ${contactInfo?.businessHours?.weekdays || 'Monday - Friday 9:00 am to 5:00 pm'}`,
+        `Weekends: ${contactInfo?.businessHours?.weekends || 'Saturday - Sunday Closed'}`
+      ],
+      link: `tel:${(contactInfo?.phone || '3146654673').replace(/\D/g, '')}`,
     },
     {
       icon: <MapPinIcon className="w-6 h-6" />,
       title: 'Office',
-      details: '123 Tech Avenue, San Francisco, CA',
-      link: 'https://maps.google.com',
+      details: contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110',
+      link: `https://maps.google.com/?q=${encodeURIComponent(contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110')}`,
     },
   ];
 
@@ -124,7 +151,7 @@ const Contact = () => {
               <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Contact Information</h3>
               
               <div className="space-y-6">
-                {contactInfo.map((info, index) => (
+                {getContactInfoItems().map((info, index) => (
                   <motion.a
                     key={info.title}
                     href={info.link}
@@ -140,7 +167,13 @@ const Contact = () => {
                     </div>
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">{info.title}</h4>
-                      <p className="text-gray-600 dark:text-gray-300">{info.details}</p>
+                      {Array.isArray(info.details) ? (
+                        info.details.map((detail, i) => (
+                          <p key={i} className="text-gray-600 dark:text-gray-300">{detail}</p>
+                        ))
+                      ) : (
+                        <p className="text-gray-600 dark:text-gray-300">{info.details}</p>
+                      )}
                     </div>
                   </motion.a>
                 ))}

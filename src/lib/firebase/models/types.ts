@@ -67,8 +67,24 @@ export interface ContactInfo extends BaseDocument {
   email: string;
   phone: string;
   address: string;
-  socialLinks: {
-    [key: string]: string; // e.g., 'github': 'https://github.com/username'
+  businessHours?: {
+    weekdays: string;
+    weekends: string;
+  };
+  socialMedia?: {
+    linkedin: string;
+    github: string;
+    twitter: string;
+  };
+  // For backward compatibility with existing code
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+  github?: string;
+  googleMapsUrl?: string;
+  socialLinks?: {
+    [key: string]: string;
   };
 }
 

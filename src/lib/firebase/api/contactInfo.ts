@@ -16,8 +16,8 @@ import { db } from '@/lib/firebase';
 import { ContactInfo, BusinessHour } from '../models/types';
 
 // Contact Information API
-const CONTACT_INFO_COLLECTION = 'contactInfo';
-const contactInfoCollection = collection(db, CONTACT_INFO_COLLECTION);
+const CONTACT_COLLECTION = 'contact';
+const CONTACT_DOC_ID = 'info';
 
 /**
  * Add new contact information to the database
@@ -28,13 +28,25 @@ export const saveContactInfo = async (
   try {
     if (!db) throw new Error('Firestore is not initialized');
 
-    const docRef = await addDoc(collection(db, CONTACT_INFO_COLLECTION), {
-      ...contactInfo,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    // Format the data to match what's in Firestore
+    const formattedContactInfo = {
+      email: contactInfo.email,
+      phone: contactInfo.phone,
+      address: contactInfo.address,
+      businessHours: {
+        weekdays: contactInfo.businessHours?.weekdays || 'Monday - Friday 9:00 am to 5:00 pm',
+        weekends: contactInfo.businessHours?.weekends || 'Saturday - Sunday Closed'
+      },
+      socialMedia: {
+        linkedin: contactInfo.socialMedia?.linkedin || contactInfo.linkedin || '',
+        github: contactInfo.socialMedia?.github || contactInfo.github || '',
+        twitter: contactInfo.socialMedia?.twitter || contactInfo.twitter || '',
+      },
+      updatedAt: serverTimestamp()
+    };
 
-    return { success: true, id: docRef.id };
+    await updateDoc(doc(db, CONTACT_COLLECTION, CONTACT_DOC_ID), formattedContactInfo);
+    return { success: true, id: CONTACT_DOC_ID };
   } catch (error) {
     console.error('Error saving contact info:', error);
     const errorMessage = error instanceof FirestoreError 
@@ -45,17 +57,43 @@ export const saveContactInfo = async (
 };
 
 /**
- * Get contact information by ID
+ * Get contact information 
  */
 export const getContactInfo = async (): Promise<ContactInfo | null> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
 
-    const querySnapshot = await getDocs(collection(db, CONTACT_INFO_COLLECTION));
+    console.log('Fetching contact info from collection:', CONTACT_COLLECTION);
+    const docRef = doc(db, CONTACT_COLLECTION, CONTACT_DOC_ID);
+    const docSnap = await getDoc(docRef);
     
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as ContactInfo;
+    if (docSnap.exists()) {
+      console.log('Found contact info document');
+      const data = docSnap.data();
+      console.log('Contact info data:', data);
+      
+      // Extract social media links
+      const socialMedia = data.socialMedia || {};
+      const businessHours = data.businessHours || {};
+      
+      // Transform data to match expected format in the UI
+      return { 
+        id: CONTACT_DOC_ID, 
+        email: data.email || '',
+        phone: data.phone || '',
+        address: data.address || '',
+        businessHours: {
+          weekdays: businessHours.weekdays || '',
+          weekends: businessHours.weekends || ''
+        },
+        socialMedia: {
+          linkedin: socialMedia.linkedin || '',
+          github: socialMedia.github || '',
+          twitter: socialMedia.twitter || ''
+        }
+      } as any as ContactInfo;
+    } else {
+      console.log('No contact info document found');
     }
     
     return null;
@@ -74,10 +112,21 @@ export async function getAllContactInfo() {
     const contactInfoList: ContactInfo[] = [];
     
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const socialLinks = data.socialLinks || {};
+      
       contactInfoList.push({
         id: doc.id,
-        ...doc.data() as Omit<ContactInfo, 'id'>
-      });
+        email: data.email || '',
+        phone: data.phone || '',
+        address: data.address || '',
+        googleMapsUrl: data.googleMapsUrl || '',
+        facebook: socialLinks.facebook || '',
+        twitter: socialLinks.twitter || '',
+        instagram: socialLinks.instagram || '',
+        linkedin: socialLinks.linkedin || '',
+        socialLinks
+      } as any as ContactInfo);
     });
     
     return { success: true, contactInfoList };
@@ -119,16 +168,28 @@ export async function getContactInfoByType(type: 'email' | 'phone' | 'address') 
  */
 export const updateContactInfo = async (
   id: string, 
-  updates: Partial<ContactInfo>
+  updates: any
 ): Promise<{ success: boolean; error?: string }> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
 
+    // Format the updates to match the expected structure
+    const formattedUpdates = {
+      email: updates.email,
+      phone: updates.phone,
+      address: updates.address,
+      googleMapsUrl: updates.googleMapsUrl,
+      socialLinks: {
+        facebook: updates.facebook || '',
+        twitter: updates.twitter || '',
+        instagram: updates.instagram || '',
+        linkedin: updates.linkedin || ''
+      },
+      updatedAt: serverTimestamp()
+    };
+
     const docRef = doc(db, CONTACT_INFO_COLLECTION, id);
-    await updateDoc(docRef, {
-      ...updates,
-      updatedAt: serverTimestamp(),
-    });
+    await updateDoc(docRef, formattedUpdates);
 
     return { success: true };
   } catch (error) {

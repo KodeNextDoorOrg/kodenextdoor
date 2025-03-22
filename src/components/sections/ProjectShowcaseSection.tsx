@@ -6,22 +6,24 @@ import { Section, Container, Heading, Text, Button } from '@/components/ui';
 import * as FirebaseAPI from '@/lib/firebase/api/projects';
 import { Project } from '@/lib/firebase';
 
-// Temporarily fix image imports by adding fallback content
-const ProjectImage = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-    <span className="text-gray-500 dark:text-gray-400">{alt}</span>
-  </div>
-);
-
-// Categories for filtering
-const categories = [
-  'All',
-  'Web Development',
-  'Mobile App',
-  'Web Application',
-  'Web Platform',
-  'Education'
-];
+// Handle project images properly
+const ProjectImage = ({ src, alt }: { src: string; alt: string }) => {
+  if (!src) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+        <span className="text-gray-500 dark:text-gray-400">{alt}</span>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${src})` }}>
+      <div className="w-full h-full flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
+        <span className="text-white font-medium bg-black/50 px-3 py-1 rounded-md">{alt}</span>
+      </div>
+    </div>
+  );
+};
 
 export default function ProjectShowcaseSection() {
   // State for projects data
@@ -33,6 +35,7 @@ export default function ProjectShowcaseSection() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categories, setCategories] = useState<string[]>(['All']);
   
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -46,17 +49,97 @@ export default function ProjectShowcaseSection() {
   useEffect(() => {
     const fetchProjects = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const result = await FirebaseAPI.getAllProjects();
         
-        if (result.success && result.projects) {
+        if (result.success && result.projects && result.projects.length > 0) {
           setProjects(result.projects);
+          
+          // Extract unique categories from projects
+          const uniqueCategories = [...new Set(result.projects.map(project => project.category))];
+          setCategories(['All', ...uniqueCategories]);
         } else {
-          setError('Failed to load projects');
+          // Try direct Firestore query as a fallback
+          try {
+            const { collection, getDocs } = await import('firebase/firestore');
+            const { db } = await import('@/lib/firebase');
+            
+            // Simple query without conditions to get ALL projects
+            const querySnapshot = await getDocs(collection(db, 'projects'));
+            
+            if (querySnapshot.empty) {
+              // Create a test project as a fallback only if nothing else works
+              const testProject = {
+                id: 'test-project',
+                title: 'Test Project',
+                description: 'This is a test project. Create real projects in the admin panel.',
+                category: 'Web Development',
+                technologies: ['React', 'Next.js', 'Firebase'],
+                features: ['Feature 1', 'Feature 2', 'Feature 3'],
+                imageUrl: '/images/test-project.jpg',
+                image: '/images/test-project.jpg',
+                isActive: true,
+                link: '#'
+              };
+              
+              setProjects([testProject]);
+              setCategories(['All', 'Web Development']);
+              return;
+            }
+            
+            // Process the raw data
+            const directProjects = querySnapshot.docs.map(doc => {
+              const data = doc.data();
+              
+              // Ensure technologies and features are arrays
+              let technologies = [];
+              if (Array.isArray(data.technologies)) {
+                technologies = data.technologies;
+              } else if (typeof data.technologies === 'string') {
+                technologies = data.technologies.split(',').map((t: string) => t.trim());
+              }
+              
+              let features = [];
+              if (Array.isArray(data.features)) {
+                features = data.features;
+              } else if (typeof data.features === 'string') {
+                features = data.features.split(',').map((f: string) => f.trim());
+              } else {
+                features = ['No features specified'];
+              }
+              
+              return {
+                id: doc.id,
+                title: data.title || 'Untitled Project',
+                description: data.description || 'No description available',
+                category: data.category || 'Web Development',
+                technologies: technologies.length > 0 ? technologies : ['Not specified'],
+                features: features,
+                imageUrl: data.imageUrl || '',
+                image: data.imageUrl || '',
+                isActive: true,
+                link: data.liveUrl || data.caseStudyUrl || '#'
+              };
+            });
+            
+            if (directProjects.length > 0) {
+              setProjects(directProjects);
+              
+              // Extract unique categories from projects
+              const uniqueCategories = [...new Set(directProjects.map(project => project.category))];
+              setCategories(['All', ...uniqueCategories]);
+            } else {
+              setError('No projects found in database');
+            }
+          } catch (directErr) {
+            console.error('Error in direct Firestore query:', directErr);
+            setError('Failed to load projects: ' + String(directErr));
+          }
         }
       } catch (err) {
         console.error('Error fetching projects:', err);
-        setError('An unexpected error occurred');
+        setError('An unexpected error occurred: ' + String(err));
       } finally {
         setIsLoading(false);
       }
@@ -207,14 +290,41 @@ export default function ProjectShowcaseSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Failed to load projects</h3>
-              <p className="text-red-700 dark:text-red-300">{error}</p>
-              <Button 
-                variant="secondary" 
-                className="mt-4"
-                onClick={() => window.location.reload()}
-              >
-                Retry
-              </Button>
+              <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+              <div className="space-y-2">
+                <Button 
+                  variant="secondary" 
+                  onClick={() => window.location.reload()}
+                  className="mr-2"
+                >
+                  Reload Page
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => {
+                    setIsLoading(true);
+                    setError(null);
+                    const fetchProjects = async () => {
+                      try {
+                        const result = await FirebaseAPI.getAllProjects();
+                        if (result.success && result.projects) {
+                          setProjects(result.projects);
+                        } else {
+                          setError('Failed to load projects: ' + (result.error || 'Unknown error'));
+                        }
+                      } catch (err) {
+                        console.error('Error fetching projects:', err);
+                        setError('An unexpected error occurred: ' + String(err));
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    };
+                    fetchProjects();
+                  }}
+                >
+                  Retry
+                </Button>
+              </div>
             </motion.div>
           </div>
         )}
@@ -252,9 +362,10 @@ export default function ProjectShowcaseSection() {
             {/* Projects grid */}
             {filteredProjects.length > 0 && (
               <motion.div
+                key={activeCategory}
                 variants={containerVariants}
                 initial="hidden"
-                whileInView="visible"
+                animate="visible"
                 viewport={{ once: true, amount: 0.2 }}
                 className="mb-16"
               >
@@ -271,7 +382,7 @@ export default function ProjectShowcaseSection() {
                         {/* Project image */}
                         <div className="aspect-[4/3] relative overflow-hidden">
                           <div className="absolute inset-0 transition duration-500 transform group-hover:scale-110">
-                            <ProjectImage src={project.image} alt={project.title} />
+                            <ProjectImage src={project.imageUrl || project.image} alt={project.title} />
                           </div>
                           
                           {/* Category badge */}

@@ -1,8 +1,11 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Container, Grid, Text } from '../ui';
+import { Container, Text } from '../ui';
+import { getContactInfo } from '@/lib/firebase/api/contactInfo';
+import { ContactInfo } from '@/lib/firebase/models/types';
 
 interface FooterLink {
   label: string;
@@ -46,15 +49,43 @@ const footerSections: FooterSection[] = [
   },
 ];
 
-const socialLinks = [
-  { label: 'Twitter', href: 'https://twitter.com' },
-  { label: 'LinkedIn', href: 'https://linkedin.com' },
-  { label: 'GitHub', href: 'https://github.com' },
-  { label: 'Instagram', href: 'https://instagram.com' },
-];
-
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch contact information from the database
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        console.log('Footer: Fetching contact info...');
+        const info = await getContactInfo();
+        console.log('Footer: Contact info received:', info);
+        setContactInfo(info);
+      } catch (error) {
+        console.error('Footer: Error fetching contact info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
+  
+  // Fallback values if data is not available
+  const email = contactInfo?.email || 'info@kodenextdoor.com';
+  const phone = contactInfo?.phone || '314-665-4673';
+  const address = contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110';
+  const businessHours = contactInfo?.businessHours?.weekdays || 'Monday - Friday 9:00 am to 5:00 pm';
+  
+  console.log('Footer: Using values:', { email, phone, address });
+  
+  // Update the socialLinks with values from database if available
+  const socialLinks = [
+    { label: 'Twitter', href: contactInfo?.socialMedia?.twitter || 'https://twitter.com' },
+    { label: 'LinkedIn', href: contactInfo?.socialMedia?.linkedin || 'https://linkedin.com' },
+    { label: 'GitHub', href: contactInfo?.socialMedia?.github || 'https://github.com' },
+  ];
   
   return (
     <footer className="bg-gray-light dark:bg-gray-dark pt-16 pb-8">
@@ -113,24 +144,28 @@ export default function Footer() {
           ))}
         </div>
         
-        {/* Contact Info */}
+        {/* Contact Info - Now loaded from database */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-8 border-t border-b border-gray-200 dark:border-gray-700 mb-8">
           <div className="text-center">
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Email Us</h4>
-            <a href="mailto:hello@kodenextdoor.com" className="text-primary hover:underline">
-              hello@kodenextdoor.com
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">We'll respond within 24 hours</p>
+            <a href={`mailto:${email}`} className="text-primary hover:underline">
+              {email}
             </a>
           </div>
           <div className="text-center">
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Call Us</h4>
-            <a href="tel:+15551234567" className="text-primary hover:underline">
-              +1 (555) 123-4567
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{businessHours}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{contactInfo?.businessHours?.weekends || 'Saturday - Sunday Closed'}</p>
+            <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-primary hover:underline">
+              {phone}
             </a>
           </div>
           <div className="text-center">
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Office</h4>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Visit Us</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Come say hello at our office</p>
             <p className="text-gray-700 dark:text-gray-300">
-              123 Tech Avenue, San Francisco, CA
+              {address}
             </p>
           </div>
         </div>

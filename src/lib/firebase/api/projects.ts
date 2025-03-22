@@ -11,7 +11,8 @@ import {
   where,
   serverTimestamp,
   QueryConstraint,
-  FirestoreError
+  FirestoreError,
+  limit
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Project } from '../models/types';
@@ -64,26 +65,69 @@ export const getProjectById = async (id: string): Promise<Project | null> => {
 /**
  * Get all projects
  */
-export const getAllProjects = async (activeOnly: boolean = false): Promise<Project[]> => {
+export const getAllProjects = async (activeOnly: boolean = false): Promise<{ success: boolean; projects?: Project[]; error?: unknown }> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
-
-    const constraints: QueryConstraint[] = [orderBy('order', 'asc')];
+    
+    // Add constraints
+    const constraints: QueryConstraint[] = [];
     
     if (activeOnly) {
-      constraints.push(where('isActive', '==', true));
+      constraints.push(where('isActive', '!=', false));
     }
     
+    // We'll query without ordering first to avoid errors if 'order' field doesn't exist
     const q = query(collection(db, COLLECTION_NAME), ...constraints);
     const querySnapshot = await getDocs(q);
     
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Project[];
+    const projects = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // Ensure technologies and features are arrays
+      let technologies = [];
+      if (Array.isArray(data.technologies)) {
+        technologies = data.technologies;
+      } else if (typeof data.technologies === 'string') {
+        technologies = data.technologies.split(',').map((t: string) => t.trim());
+      }
+      
+      let features = [];
+      if (Array.isArray(data.features)) {
+        features = data.features;
+      } else if (typeof data.features === 'string') {
+        features = data.features.split(',').map((f: string) => f.trim());
+      } else {
+        // Default features if none exist
+        features = ['No features specified'];
+      }
+      
+      // Build a complete project object with fallbacks for missing fields
+      return {
+        id: doc.id,
+        title: data.title || 'Untitled Project',
+        description: data.description || 'No description available.',
+        category: data.category || 'Web Development',
+        technologies: technologies.length > 0 ? technologies : ['Not specified'],
+        features: features,
+        imageUrl: data.imageUrl || '',
+        image: data.imageUrl || '',
+        isActive: data.isActive !== false, // Default to true
+        link: data.liveUrl || data.caseStudyUrl || '#',
+        order: data.order || 0
+      } as unknown as Project;
+    });
+    
+    // Sort projects by order field after creation
+    projects.sort((a, b) => {
+      const orderA = typeof a.order === 'number' ? a.order : 0;
+      const orderB = typeof b.order === 'number' ? b.order : 0;
+      return orderA - orderB;
+    });
+    
+    return { success: true, projects };
   } catch (error) {
     console.error('Error getting projects:', error);
-    return [];
+    return { success: false, error };
   }
 };
 
@@ -118,21 +162,50 @@ export const getProjectsByCategory = async (category: string): Promise<Project[]
  */
 export async function getFeaturedProjects(limitCount = 6) {
   try {
+    if (!db) throw new Error('Firestore is not initialized');
+    
+    console.log('Fetching featured projects...');
+    
     const q = query(
       collection(db, COLLECTION_NAME),
       where('isFeatured', '==', true),
-      orderBy('sortOrder', 'asc'),
+      where('isActive', '==', true),
       limit(limitCount)
     );
     
     const querySnapshot = await getDocs(q);
-    const projects: Project[] = [];
+    console.log(`Found ${querySnapshot.docs.length} featured projects`);
     
-    querySnapshot.forEach((doc) => {
-      projects.push({
+    const projects = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // Ensure technologies and features are arrays
+      let technologies = [];
+      if (Array.isArray(data.technologies)) {
+        technologies = data.technologies;
+      } else if (typeof data.technologies === 'string') {
+        technologies = data.technologies.split(',').map((t: string) => t.trim());
+      }
+      
+      let features = [];
+      if (Array.isArray(data.features)) {
+        features = data.features;
+      } else if (typeof data.features === 'string') {
+        features = data.features.split(',').map((f: string) => f.trim());
+      }
+      
+      return {
         id: doc.id,
-        ...doc.data() as Omit<Project, 'id'>
-      });
+        title: data.title || 'Untitled Project',
+        description: data.description || '',
+        category: data.category || 'Web Development',
+        technologies: technologies,
+        features: features,
+        imageUrl: data.imageUrl || '',
+        image: data.imageUrl || '',
+        isActive: data.isActive !== false, // Default to true
+        link: data.liveUrl || data.caseStudyUrl || '#'
+      } as unknown as Project;
     });
     
     return { success: true, projects };

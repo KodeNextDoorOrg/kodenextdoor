@@ -1,125 +1,60 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   signInWithEmailAndPassword,
   setPersistence,
   browserLocalPersistence,
-  onAuthStateChanged
 } from 'firebase/auth';
 import { 
-  doc, 
-  getDoc
+  getDoc,
+  doc,
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const [needsSetup, setNeedsSetup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Check auth state and setup status
-  useEffect(() => {
-    let unsubscribe: () => void;
-
-    const checkStatus = async () => {
-      try {
-        setIsLoading(true);
-        setError('');
-
-        // Enable persistence
-        await setPersistence(auth, browserLocalPersistence);
-
-        // Check if admin setup is needed
-        const setupDoc = await getDoc(doc(db, 'settings', 'adminSetup'));
-        if (!setupDoc.exists() || !setupDoc.data().isSetUp) {
-          console.log('Admin setup needed');
-          setNeedsSetup(true);
-          setIsLoading(false);
-          return;
-        }
-
-        // Set up auth state listener
-        unsubscribe = onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            try {
-              // User is signed in, check if they're an admin
-              const userDoc = await getDoc(doc(db, 'users', user.uid));
-              if (userDoc.exists() && userDoc.data().role === 'admin') {
-                router.push('/admin');
-                return;
-              }
-            } catch (err) {
-              console.error('Error checking admin status:', err);
-            }
-          }
-          setIsLoading(false);
-        });
-      } catch (err: any) {
-        console.error('Error checking status:', err);
-        if (err.code === 'permission-denied') {
-          // This is expected when no admin exists
-          setNeedsSetup(true);
-        } else {
-          setError('Error checking status. Please try again.');
-        }
-        setIsLoading(false);
-      }
-    };
-
-    checkStatus();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [router]);
-
-  // Handle setup redirect
-  useEffect(() => {
-    if (needsSetup) {
-      router.push('/admin/setup');
-    }
-  }, [needsSetup, router]);
-
-  // Handle login
+  // Handle login 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-
-      // Sign in with Firebase Authentication
+      // Set persistence
+      await setPersistence(auth, browserLocalPersistence);
+      
+      // Sign in with Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
 
-      // Additional verification to ensure user has admin role
+      // Check if user is admin
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       
-      if (userDoc.exists() && userDoc.data().role === 'admin') {
-        router.push('/admin');
-        return;
+      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+        throw new Error('Access denied: Not an admin account');
       }
 
-      // If we get here, the user is not an admin
-      await auth.signOut();
-      throw new Error('You do not have admin privileges');
+      // Redirect to admin dashboard
+      router.push('/admin');
+      
     } catch (err: any) {
       console.error('Login error:', err);
       
+      // Handle specific error messages
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
         setError('Invalid email or password');
       } else if (err.code === 'auth/too-many-requests') {
-        setError('Too many failed attempts. Please try again later.');
+        setError('Too many failed login attempts. Please try again later');
       } else if (err.code === 'auth/user-disabled') {
-        setError('This account has been disabled.');
+        setError('This account has been disabled');
       } else {
         setError(err.message || 'Failed to log in');
       }
@@ -128,18 +63,6 @@ export default function LoginPage() {
     }
   };
 
-  // Always render the loading state if loading
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -147,7 +70,7 @@ export default function LoginPage() {
           Admin Login
         </h1>
         <p className="mb-6 text-gray-600 dark:text-gray-300">
-          Please login to access the admin dashboard
+          Sign in to access your admin dashboard
         </p>
 
         {error && (
@@ -168,6 +91,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              disabled={isLoading}
             />
           </div>
 
@@ -182,6 +106,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              disabled={isLoading}
             />
           </div>
 

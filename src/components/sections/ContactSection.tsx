@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Section, Container, Heading, Text, Button } from '@/components/ui';
 import * as FirebaseAPI from '@/lib/firebase/api/contactSubmissions';
+import { getContactInfo } from '@/lib/firebase/api/contactInfo';
+import { ContactInfo } from '@/lib/firebase/models/types';
 
 export default function ContactSection() {
   // Form state
@@ -17,6 +19,10 @@ export default function ContactSection() {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
+  // Contact info state
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [isLoadingContact, setIsLoadingContact] = useState(true);
+  
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -24,6 +30,30 @@ export default function ContactSection() {
   });
   
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  
+  // Fetch contact information
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        console.log('ContactSection: Fetching contact info...');
+        const info = await getContactInfo();
+        console.log('ContactSection: Contact info received:', info);
+        setContactInfo(info);
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      } finally {
+        setIsLoadingContact(false);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
+  
+  // Fallback values if data is not available
+  const email = contactInfo?.email || 'info@kodenextdoor.com';
+  const phone = contactInfo?.phone || '314-665-4673';
+  const address = contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110';
+  const businessHours = contactInfo?.businessHours?.weekdays || 'Monday - Friday 9:00 am to 2:00pm';
   
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -132,7 +162,7 @@ export default function ContactSection() {
               </Text>
             </div>
             
-            {/* Contact methods */}
+            {/* Contact methods - Now loaded from database */}
             <div className="space-y-6">
               <motion.div 
                 className="flex items-start space-x-4"
@@ -149,8 +179,8 @@ export default function ContactSection() {
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Email Us</h3>
                   <p className="text-gray-700 dark:text-gray-300 mb-1">We'll respond within 24 hours</p>
-                  <a href="mailto:hello@kodenextdoor.com" className="text-primary hover:text-primary-dark transition-colors">
-                    hello@kodenextdoor.com
+                  <a href={`mailto:${email}`} className="text-primary hover:text-primary-dark transition-colors">
+                    {email}
                   </a>
                 </div>
               </motion.div>
@@ -169,9 +199,10 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Call Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">Mon-Fri from 8am to 5pm</p>
-                  <a href="tel:+1234567890" className="text-primary hover:text-primary-dark transition-colors">
-                    +1 (234) 567-890
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">{businessHours}</p>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">{contactInfo?.businessHours?.weekends || 'Saturday - Sunday Closed'}</p>
+                  <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-primary hover:text-primary-dark transition-colors">
+                    {phone}
                   </a>
                 </div>
               </motion.div>
@@ -192,9 +223,14 @@ export default function ContactSection() {
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Visit Us</h3>
                   <p className="text-gray-700 dark:text-gray-300 mb-1">Come say hello at our office</p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    123 Innovation Street, Tech City, CA 94043
-                  </p>
+                  <a 
+                    href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-primary hover:text-primary-dark transition-colors"
+                  >
+                    {address}
+                  </a>
                 </div>
               </motion.div>
             </div>
