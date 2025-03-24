@@ -1,23 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import IconSelector from '@/components/admin/IconSelector';
-import { saveService } from '@/lib/firebase/api/services';
+import { getServiceById, updateService, deleteService } from '@/lib/firebase/api/services';
 
-interface ServiceFormData {
-  title: string;
-  description: string;
-  features: string[];
-  icon: string;
-  color: string;
-  isActive: boolean;
-  order: number;
-}
-
-// Service color options
+// Service color options - same as new page
 const colorOptions = [
   { name: 'Indigo to Blue', value: 'from-indigo-500 to-blue-500' },
   { name: 'Green to Teal', value: 'from-green-500 to-teal-500' },
@@ -29,20 +17,68 @@ const colorOptions = [
   { name: 'Violet to Purple', value: 'from-violet-500 to-purple-500' }
 ];
 
-export default function NewServicePage() {
+interface ServiceFormData {
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon: string;
+  color: string;
+  isActive: boolean;
+  order: number;
+}
+
+export default function EditServicePage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const { id } = params;
+  
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ServiceFormData>({
+    id: '',
     title: '',
     description: '',
     features: [],
     icon: '',
-    color: 'from-indigo-500 to-blue-500', // Default color
+    color: 'from-indigo-500 to-blue-500',
     isActive: true,
-    order: 0,
+    order: 0
   });
+  
   const [newFeature, setNewFeature] = useState('');
+
+  // Fetch service data
+  useEffect(() => {
+    async function fetchService() {
+      try {
+        setIsLoading(true);
+        const service = await getServiceById(id);
+        
+        if (service) {
+          setFormData({
+            id: service.id,
+            title: service.title,
+            description: service.description,
+            features: service.features || [],
+            icon: service.icon || '',
+            color: service.color || 'from-indigo-500 to-blue-500',
+            isActive: service.isActive !== false, // Default to true if not set
+            order: service.order || 0
+          });
+        } else {
+          setError('Service not found');
+        }
+      } catch (err) {
+        console.error('Error fetching service:', err);
+        setError('Failed to load service');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchService();
+  }, [id]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,19 +86,45 @@ export default function NewServicePage() {
     setError(null);
 
     try {
-      const result = await saveService({
-        ...formData,
-        isActive: true, // New services are active by default
+      const result = await updateService(id, {
+        title: formData.title,
+        description: formData.description,
+        features: formData.features,
+        icon: formData.icon,
+        color: formData.color,
+        isActive: formData.isActive
       });
 
       if (result.success) {
         router.push('/admin/services');
       } else {
-        setError(result.error || 'Failed to create service');
+        setError(result.error || 'Failed to update service');
       }
     } catch (err) {
-      setError('Failed to create service');
-      console.error('Error creating service:', err);
+      console.error('Error updating service:', err);
+      setError('Failed to update service');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+  
+  async function handleDelete() {
+    if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      const result = await deleteService(id);
+      
+      if (result.success) {
+        router.push('/admin/services');
+      } else {
+        setError(result.error || 'Failed to delete service');
+      }
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      setError('Failed to delete service');
     } finally {
       setIsSubmitting(false);
     }
@@ -86,9 +148,23 @@ export default function NewServicePage() {
     }));
   }
 
+  if (isLoading) {
+    return (
+      <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
+        <div className="space-y-6">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h1 className="text-3xl font-medium mb-8">New Service</h1>
+      <h1 className="text-3xl font-medium mb-8">Edit Service</h1>
 
       {error && (
         <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
@@ -166,6 +242,21 @@ export default function NewServicePage() {
             ))}
           </div>
         </div>
+        
+        <div>
+          <div className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="isActive"
+              checked={formData.isActive}
+              onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+            />
+            <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              Active (visible on website)
+            </label>
+          </div>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -212,21 +303,32 @@ export default function NewServicePage() {
           </div>
         </div>
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
-            onClick={() => router.back()}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
             disabled={isSubmitting}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Creating...' : 'Create Service'}
+            Delete Service
           </button>
+        
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
         </div>
       </form>
     </div>

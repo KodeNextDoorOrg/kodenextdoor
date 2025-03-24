@@ -12,6 +12,10 @@ export default function HeroSection() {
   const [randomDelays, setRandomDelays] = useState({
     particleDelays: []
   });
+  // Track if component is mounted
+  const [isClient, setIsClient] = useState(false);
+  // Track if initial load animation should play
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -26,6 +30,8 @@ export default function HeroSection() {
   
   // Generate particles and any random values on client-side only to avoid hydration mismatch
   useEffect(() => {
+    setIsClient(true);
+    
     // Generate particle positions
     const newParticles = Array.from({ length: 20 }, (_, i) => ({
       id: i,
@@ -42,6 +48,13 @@ export default function HeroSection() {
     setRandomDelays({
       particleDelays: newParticleDelays
     });
+    
+    // Force animations to start with a small delay
+    const timer = setTimeout(() => {
+      setShouldAnimate(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   // More dynamic fade in animation with staggering
@@ -99,14 +112,15 @@ export default function HeroSection() {
         <motion.div
           className="absolute top-0 -right-40 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-primary/20 to-primary/5 blur-3xl"
           animate={{ 
-            y: [0, -20, 0],
-            scale: [1, 1.05, 1],
-            rotate: [0, 5, 0]
+            y: [0, -30],
+            scale: [1, 1.1],
+            rotate: [0, 5]
           }}
           style={{ y: yBlob1 }}
           transition={{ 
-            duration: 8, 
+            duration: 10, 
             repeat: Infinity,
+            repeatType: "reverse",
             ease: "easeInOut"
           }}
         />
@@ -116,7 +130,7 @@ export default function HeroSection() {
           animate={{ 
             y: [0, -30],
             scale: [1, 1.1],
-            rotate: [0, -5] 
+            rotate: [0, -5]
           }}
           style={{ y: yBlob2 }}
           transition={{ 
@@ -179,7 +193,7 @@ export default function HeroSection() {
             style={{ y: yText, opacity }}
             variants={containerVariants}
             initial="hidden"
-            animate="visible"
+            animate={isClient ? "visible" : "hidden"}
           >
             <motion.div 
               className="text-lg text-accent font-semibold mb-4 inline-block"
@@ -201,10 +215,15 @@ export default function HeroSection() {
               <motion.span 
                 className="text-gradient inline-block" 
                 animate={{ 
-                  backgroundSize: ['100% 100%', '200% 100%', '100% 100%'],
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  backgroundSize: ['100% 100%', '200% 100%'],
+                  backgroundPosition: ['0% 50%', '100% 50%']
                 }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity, 
+                  repeatType: "reverse",
+                  ease: "easeInOut" 
+                }}
               >
                 Digital Reality
               </motion.span>
@@ -245,7 +264,7 @@ export default function HeroSection() {
               <motion.div 
                 className="flex -space-x-2"
                 initial="hidden"
-                animate="visible"
+                animate={isClient ? "visible" : "hidden"}
                 variants={{
                   hidden: {},
                   visible: {
@@ -295,7 +314,7 @@ export default function HeroSection() {
           <motion.div 
             className="flex-1 relative w-full max-w-xl mx-auto md:mx-0"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={isClient ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
             <motion.div 

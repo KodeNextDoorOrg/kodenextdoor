@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -25,7 +25,7 @@ export default function SetupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const [adminExists, setAdminExists] = useState(false);
+  const [adminCount, setAdminCount] = useState(0);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,26 +34,15 @@ export default function SetupPage() {
   const [successMessage, setSuccessMessage] = useState('');
 
   // Check if admin already exists when page loads
-  useState(() => {
+  useEffect(() => {
     const checkAdminExists = async () => {
       try {
-        // First check settings document
-        const settingsDoc = await getDoc(doc(db, 'settings', 'adminSetup'));
-        if (settingsDoc.exists()) {
-          setAdminExists(true);
-          setIsChecking(false);
-          return;
-        }
-
-        // Then check if any admin users exist
+        // Check how many admin users exist
         const q = query(collection(db, 'users'), where('role', '==', 'admin'));
         const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          setAdminExists(true);
-        }
+        setAdminCount(querySnapshot.size);
       } catch (err) {
         console.error('Error checking admin status:', err);
-        // Continue anyway, as the user might still be able to set up an admin
       } finally {
         setIsChecking(false);
       }
@@ -90,7 +79,7 @@ export default function SetupPage() {
       // Sign in again to ensure token is fresh
       await signInWithEmailAndPassword(auth, email, password);
 
-      // Create user document first
+      // Create user document with admin role
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         role: 'admin',
@@ -98,12 +87,14 @@ export default function SetupPage() {
         updatedAt: new Date().toISOString()
       });
 
-      // Then create the admin setup document
-      await setDoc(doc(db, 'settings', 'adminSetup'), {
-        isSetUp: true,
-        setupDate: new Date().toISOString(),
-        setupBy: user.email
-      });
+      // If this is the first admin, mark the site as set up
+      if (adminCount === 0) {
+        await setDoc(doc(db, 'settings', 'adminSetup'), {
+          isSetUp: true,
+          setupDate: new Date().toISOString(),
+          setupBy: user.email
+        });
+      }
 
       setSuccessMessage('Admin account created successfully!');
       
@@ -143,35 +134,16 @@ export default function SetupPage() {
     );
   }
 
-  if (adminExists) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-            Admin Already Set Up
-          </h1>
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
-            An admin account already exists. Please use the login page instead.
-          </p>
-          <Link
-            href="/admin/login"
-            className="block w-full text-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
         <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-          Admin Setup
+          {adminCount > 0 ? 'Add Admin Account' : 'Admin Setup'}
         </h1>
         <p className="mb-6 text-gray-600 dark:text-gray-300">
-          Create your admin account to manage your website content
+          {adminCount > 0 
+            ? 'Create additional admin account to manage your website content'
+            : 'Create your admin account to manage your website content'}
         </p>
 
         {error && (
@@ -252,7 +224,7 @@ export default function SetupPage() {
             disabled={isLoading}
             className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Creating Account...' : 'Create Admin Account'}
+            {isLoading ? 'Creating Account...' : adminCount > 0 ? 'Add Admin Account' : 'Create Admin Account'}
           </button>
 
           <div className="text-center mt-4">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ interface Service {
   features: string[];
   icon: string;
   order: number;
+  isActive: boolean;
 }
 
 export default function ServicesPage() {
@@ -40,6 +41,34 @@ export default function ServicesPage() {
       console.error('Error fetching services:', err);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function toggleServiceActive(id: string, currentStatus: boolean) {
+    try {
+      const serviceRef = doc(db, 'services', id);
+      
+      console.log(`Toggling service ${id} from ${currentStatus} to ${!currentStatus}`);
+      
+      // Always ensure we're setting a proper boolean value, not a string or number
+      const newActiveStatus = !currentStatus;
+      
+      await updateDoc(serviceRef, { 
+        isActive: newActiveStatus,
+        updatedAt: new Date()
+      });
+      
+      console.log(`Service ${id} active status updated to ${newActiveStatus}`);
+      
+      // Update local state to reflect the change
+      setServices(prevServices => 
+        prevServices.map(service => 
+          service.id === id ? { ...service, isActive: newActiveStatus } : service
+        )
+      );
+    } catch (err) {
+      setError('Failed to update service');
+      console.error('Error updating service:', err);
     }
   }
 
@@ -75,17 +104,20 @@ export default function ServicesPage() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-medium">Services</h1>
-        <Link
-          href="/admin/services/new"
-          className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          <span>New Service</span>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Services</h1>
+      <div className="flex space-x-4 mb-8">
+        <Link href="/admin/services/new" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Create New Service
+        </Link>
+        <Link href="/admin/services/icon-helper" className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+          Icon Helper
+        </Link>
+        <Link href="/admin/services/fix-icons" className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+          Fix Icons
+        </Link>
+        <Link href="/admin/services/fix-active-status" className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+          Fix Active Status
         </Link>
       </div>
 
@@ -111,6 +143,13 @@ export default function ServicesPage() {
                   <h2 className="text-xl font-medium text-gray-900 dark:text-white">
                     {service.title}
                   </h2>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    service.isActive 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  }`}>
+                    {service.isActive ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
                   {service.description}
@@ -127,6 +166,23 @@ export default function ServicesPage() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => toggleServiceActive(service.id, service.isActive)}
+                  className={`p-2 ${
+                    service.isActive 
+                      ? 'text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+                      : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  } transition-colors`}
+                  title={service.isActive ? 'Deactivate service' : 'Activate service'}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d={service.isActive 
+                        ? "M5 13l4 4L19 7" 
+                        : "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636"} 
+                    />
+                  </svg>
+                </button>
                 <Link
                   href={`/admin/services/${service.id}`}
                   className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"

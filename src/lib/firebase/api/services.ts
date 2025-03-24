@@ -68,19 +68,60 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
   try {
     if (!db) throw new Error('Firestore is not initialized');
 
-    const constraints: QueryConstraint[] = [orderBy('order', 'asc')];
+    console.log('getAllServices called with activeOnly =', activeOnly);
     
-    if (activeOnly) {
-      constraints.push(where('isActive', '==', true));
-    }
+    // Get all services without filtering in the query
+    const allServicesQuery = query(collection(db, COLLECTION_NAME), orderBy('order', 'asc'));
+    const querySnapshot = await getDocs(allServicesQuery);
     
-    const q = query(collection(db, COLLECTION_NAME), ...constraints);
-    const querySnapshot = await getDocs(q);
+    console.log('Found', querySnapshot.docs.length, 'total services');
     
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Service[];
+    // Map all services and normalize the isActive property
+    const allServices = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // Normalize isActive to a boolean value regardless of its original type
+      // Handle various data types: boolean, string, number
+      let isActive: boolean;
+      
+      if (data.isActive === undefined || data.isActive === null) {
+        // Default to false if not set
+        isActive = false;
+      } else if (typeof data.isActive === 'boolean') {
+        // Direct boolean
+        isActive = data.isActive;
+      } else if (typeof data.isActive === 'string') {
+        // String 'true' or 'false'
+        isActive = data.isActive.toLowerCase() === 'true';
+      } else if (typeof data.isActive === 'number') {
+        // Number 1 or 0
+        isActive = data.isActive !== 0;
+      } else {
+        // Any other type, convert to boolean
+        isActive = Boolean(data.isActive);
+      }
+      
+      console.log(`Service ${doc.id} (${data.title || 'unnamed'}) isActive:`, {
+        original: data.isActive,
+        originalType: typeof data.isActive,
+        normalized: isActive
+      });
+      
+      // Return the service with normalized isActive
+      return {
+        id: doc.id,
+        ...data,
+        isActive: isActive
+      };
+    });
+    
+    // If activeOnly is true, filter for only active services
+    const results = activeOnly 
+      ? allServices.filter(service => service.isActive === true)
+      : allServices;
+    
+    console.log('Returning', results.length, 'services (filtered by activeOnly:', activeOnly, ')');
+    return results;
   } catch (error) {
     console.error('Error getting services:', error);
     return [];
@@ -126,4 +167,22 @@ export const deleteService = async (id: string): Promise<{ success: boolean; err
       : 'An unknown error occurred';
     return { success: false, error: errorMessage };
   }
-}; 
+};
+
+/**
+ * Reorder services to match a new order
+ */
+export async function reorderServices(serviceIds: string[]): Promise<boolean> {
+  try {
+    const updates = serviceIds.map((id, index) => {
+      const serviceRef = doc(db, COLLECTION_NAME, id);
+      return updateDoc(serviceRef, { order: index });
+    });
+    
+    await Promise.all(updates);
+    return true;
+  } catch (error) {
+    console.error('Error reordering services:', error);
+    return false;
+  }
+} 

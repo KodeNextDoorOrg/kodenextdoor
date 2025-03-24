@@ -16,7 +16,7 @@ export default function AboutSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   
-  // Track if we're on client-side
+  // Track if component is mounted (client-side) to prevent hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -62,11 +62,20 @@ export default function AboutSection() {
   ];
   
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  // Reduced threshold to detect earlier (0.01 instead of 0.1)
+  const isInView = useInView(ref, { once: true, amount: 0.01 });
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
+  
+  // Additional effect to force animations if not triggered by scroll
+  useEffect(() => {
+    if (isClient && !isLoading) {
+      // Force scroll event to trigger animations
+      window.dispatchEvent(new Event('scroll'));
+    }
+  }, [isClient, isLoading]);
   
   // Parallax effects
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);

@@ -75,6 +75,14 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     
     useEffect(() => {
       setIsClient(true);
+      
+      // Force immediate animation start with a small delay
+      const timer = setTimeout(() => {
+        // This will trigger a re-render and apply animations
+        setIsClient(true);
+      }, 50);
+      
+      return () => clearTimeout(timer);
     }, []);
     
     // Default animations for headings

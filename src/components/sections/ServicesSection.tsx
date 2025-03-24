@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Section, Container, Heading, Text, Button } from '@/components/ui';
+import { getAllServices } from '@/lib/firebase/api/services';
+import { Service as ServiceType } from '@/lib/firebase/models/types';
 
-interface Service {
-  icon: React.ReactNode;
+// Local interface for component-specific props
+interface ServiceDisplayProps {
+  icon: string;
   title: string;
   description: string;
   features: string[];
@@ -14,90 +17,96 @@ interface Service {
 
 export default function ServicesSection() {
   const [activeService, setActiveService] = useState<number | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const [isClient, setIsClient] = useState(false);
+  const [services, setServices] = useState<ServiceDisplayProps[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Service data
-  const services: Service[] = [
-    {
-      icon: <span className="text-2xl">💻</span>,
-      title: 'Web Development',
-      description: 'Custom web applications built with modern technologies for optimal performance and scalability.',
-      features: [
-        'Responsive design for all devices',
-        'Progressive Web Apps (PWA)',
-        'Custom CMS solutions',
-        'E-commerce integration',
-        'API development'
-      ],
-      color: 'from-indigo-500 to-blue-500'
-    },
-    {
-      icon: <span className="text-2xl">📱</span>,
-      title: 'Mobile Development',
-      description: 'Native and cross-platform mobile apps that deliver exceptional user experiences across all devices.',
-      features: [
-        'iOS and Android development',
-        'Cross-platform solutions',
-        'Mobile UI/UX design',
-        'App store optimization',
-        'Ongoing maintenance and support'
-      ],
-      color: 'from-green-500 to-teal-500'
-    },
-    {
-      icon: <span className="text-2xl">🎨</span>,
-      title: 'UI/UX Design',
-      description: 'User-centered design that balances beautiful aesthetics with intuitive functionality.',
-      features: [
-        'User research and testing',
-        'Wireframing and prototyping',
-        'Visual design',
-        'Design systems',
-        'Accessibility compliance'
-      ],
-      color: 'from-purple-500 to-indigo-500'
-    },
-    {
-      icon: <span className="text-2xl">☁️</span>,
-      title: 'Cloud Solutions',
-      description: 'Secure, scalable cloud infrastructure and deployment strategies for your applications.',
-      features: [
-        'Cloud migration',
-        'Infrastructure as code',
-        'Serverless architecture',
-        'Continuous integration/deployment',
-        'Performance optimization'
-      ],
-      color: 'from-blue-500 to-cyan-500'
-    },
-    {
-      icon: <span className="text-2xl">🔒</span>,
-      title: 'Cybersecurity',
-      description: 'Comprehensive security assessments and strategies to protect your digital assets.',
-      features: [
-        'Security audits',
-        'Penetration testing',
-        'Secure coding practices',
-        'Data encryption',
-        'Compliance assistance'
-      ],
-      color: 'from-red-500 to-orange-500'
-    },
-    {
-      icon: <span className="text-2xl">📊</span>,
-      title: 'Digital Strategy',
-      description: 'Strategic consulting to help you leverage technology for business growth and innovation.',
-      features: [
-        'Digital transformation roadmaps',
-        'Technology stack assessment',
-        'Process optimization',
-        'Data-driven insights',
-        'Innovation workshops'
-      ],
-      color: 'from-amber-500 to-yellow-500'
-    },
-  ];
+  const ref = useRef<HTMLDivElement>(null);
+  // Reduced threshold to detect earlier
+  const isInView = useInView(ref, { once: true, amount: 0.01 });
+  
+  // Track client-side rendering and fetch services
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Force scroll event to trigger animations after component mounts
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('scroll'));
+    }, 200);
+    
+    fetchServices();
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Fetch services from Firebase
+  const fetchServices = async () => {
+    try {
+      setIsLoading(true);
+      console.log('Attempting to fetch services, activeOnly=true');
+      
+      // First try with activeOnly filter
+      let fetchedServices = await getAllServices(true); 
+      console.log('Services fetched with activeOnly=true:', fetchedServices);
+      
+      // If no services are found, try fetching all services
+      if (fetchedServices.length === 0) {
+        console.log('No active services found. Fetching all services...');
+        fetchedServices = await getAllServices(false);
+        console.log('All services fetched:', fetchedServices);
+        
+        // Filter for active services in the component (as a fallback)
+        fetchedServices = fetchedServices.filter(service => {
+          console.log(`Manually checking if service ${service.id} is active:`, service.isActive);
+          // Convert various truthy values to boolean
+          return service.isActive === true || service.isActive === 'true' || service.isActive === 1;
+        });
+        
+        console.log('Services after manual filtering:', fetchedServices);
+      }
+      
+      console.log('Number of services to display:', fetchedServices.length);
+      // Check each service for isActive field
+      fetchedServices.forEach((service, i) => {
+        console.log(`Service ${i+1}:`, {
+          id: service.id,
+          title: service.title,
+          isActive: service.isActive,
+          isActiveType: typeof service.isActive
+        });
+      });
+      
+      // Map the services to our display format with default colors if not specified
+      const colorOptions = [
+        'from-indigo-500 to-blue-500',
+        'from-green-500 to-teal-500',
+        'from-purple-500 to-indigo-500',
+        'from-blue-500 to-cyan-500',
+        'from-red-500 to-orange-500',
+        'from-amber-500 to-yellow-500'
+      ];
+      
+      const displayServices = fetchedServices.map((service, index) => ({
+        icon: service.icon,
+        title: service.title,
+        description: service.description,
+        features: service.features || [],
+        color: service.color || colorOptions[index % colorOptions.length]
+      }));
+      
+      console.log('Mapped displayServices:', displayServices);
+      setServices(displayServices);
+    } catch (err) {
+      console.error('Error loading services:', err);
+      setError('Failed to load services');
+      
+      // Fallback to empty array
+      setServices([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   // Parallax effects
   const { scrollYProgress } = useScroll({
@@ -173,11 +182,40 @@ export default function ServicesSection() {
           </Text>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <ServiceCard key={service.title} service={service} index={index} />
-          ))}
-        </div>
+        {isLoading ? (
+          // Show loading placeholders
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, index) => (
+              <div 
+                key={index} 
+                className="relative rounded-2xl overflow-hidden bg-white/50 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/30 p-6 h-64 animate-pulse"
+              >
+                <div className="w-16 h-16 rounded-2xl mb-6 bg-gray-200 dark:bg-gray-700"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3 w-3/4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-full"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          // Show error message
+          <div className="text-center p-10 bg-red-50 dark:bg-red-900/20 rounded-xl">
+            <div className="text-red-600 dark:text-red-400 mb-4 text-2xl">⚠️</div>
+            <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-2">
+              Oops! Something went wrong
+            </h3>
+            <p className="text-red-600 dark:text-red-400">
+              {error}. Please try refreshing the page.
+            </p>
+          </div>
+        ) : (
+          // Show services
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => (
+              <ServiceCard key={`${service.title}-${index}`} service={service} index={index} />
+            ))}
+          </div>
+        )}
         
         <motion.div 
           className="mt-20 p-10 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 relative overflow-hidden shadow-lg"
@@ -240,7 +278,7 @@ export default function ServicesSection() {
   );
 }
 
-const ServiceCard = ({ service, index }: { service: Service; index: number }) => {
+const ServiceCard = ({ service, index }: { service: ServiceDisplayProps; index: number }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [isHovered, setIsHovered] = useState(false);
@@ -322,9 +360,8 @@ const ServiceCard = ({ service, index }: { service: Service; index: number }) =>
         <motion.div 
           animate={isHovered ? { rotate: 360 } : { rotate: 0 }}
           transition={{ duration: 0.5 }}
-        >
-          {service.icon}
-        </motion.div>
+          dangerouslySetInnerHTML={{ __html: service.icon }}
+        />
       </motion.div>
       
       {/* Service content with animation */}
@@ -389,4 +426,4 @@ const ServiceCard = ({ service, index }: { service: Service; index: number }) =>
       </div>
     </motion.div>
   );
-}; 
+};

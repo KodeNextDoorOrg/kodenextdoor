@@ -12,6 +12,7 @@ import {
 import { 
   getDoc,
   doc,
+  updateDoc,
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
@@ -41,13 +42,20 @@ export default function LoginPage() {
 
       // Check if the user is an admin
       const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-      if (!userDoc.exists() || !userDoc.data().isAdmin) {
+      console.log(userDoc.data());
+      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
         await signOut(auth);
         throw new Error('Unauthorized access');
       }
 
+      // Update last login timestamp
+      await updateDoc(doc(db, 'users', userCredential.user.uid), {
+        lastLogin: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
       // Redirect to admin dashboard
-      router.push('/admin/dashboard');
+      router.push('/admin');
       
     } catch (error) {
       // Replace 'any' with a more specific type
