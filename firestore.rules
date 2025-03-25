@@ -8,30 +8,15 @@ service cloud.firestore {
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Helper function to check if admin setup is needed
-    function needsAdminSetup() {
-      return !exists(/databases/$(database)/documents/settings/adminSetup);
-    }
-
     // Users collection
-    match /users/{userId} {
-      // Allow read if user is logged in and accessing their own data or is admin
-      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
-      
-      // Allow create if authenticated and creating own document
-      allow create: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow update/delete if admin
-      allow update, delete: if isAdmin();
+    match /users/{document} {
+      allow read, write: if isAdmin();
     }
 
-    // Settings collection
-    match /settings/{document} {
-      // Allow read for everyone
-      allow read: if true;
-      
-      // Allow write if authenticated
-      allow write: if request.auth != null;
+    // Contact submissions - anyone can create, only admins can read
+    match /contactSubmissions/{document} {
+      allow create: if true;  // Allow anyone to create submissions
+      allow read, update, delete: if isAdmin();  // Only admins can read, update, or delete
     }
 
     // Other collections - public read, admin write
