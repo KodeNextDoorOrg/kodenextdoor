@@ -1,11 +1,11 @@
-import { Metadata } from 'next';
-import { 
-  HeroSection, 
-  AboutSection, 
-  ServicesSection, 
-  ProjectShowcaseSection, 
-  ContactSection 
+import {
+  AboutSection,
+  ContactSection,
+  LandingSection,
+  ProjectShowcaseSection,
+  ServicesSection
 } from '@/components/sections';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'KodeNextDoor | Home',
@@ -35,24 +35,24 @@ export default function HomePage() {
     <main className="flex flex-col min-h-screen">
       {/* Hero section with full height */}
       <section className="min-h-screen">
-        <HeroSection />
+        <LandingSection />
       </section>
-      
+
       {/* Services section with white background */}
       <section>
         <ServicesSection />
       </section>
-      
+
       {/* About section with light background */}
       <section className="bg-gray-50 dark:bg-gray-900">
         <AboutSection />
       </section>
-      
+
       {/* Project showcase with light background */}
       <section className="bg-white dark:bg-gray-950">
         <ProjectShowcaseSection />
       </section>
-      
+
       {/* Contact section */}
       <section className="bg-gray-50 dark:bg-gray-900">
         <ContactSection />

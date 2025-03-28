@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Section, Container, Heading, Text, Button } from '@/components/ui';
+import { Button, Container, Heading, Section, Text } from '@/components/ui';
 import * as FirebaseAPI from '@/lib/firebase/api/contactSubmissions';
-import { getContactInfo } from '@/lib/firebase/api/contactInfo';
 import { ContactInfo } from '@/lib/firebase/models/types';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, useState } from 'react';
 
 export default function ContactSection() {
   // Form state
@@ -18,43 +17,26 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
+
   // Contact info state
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
-  
+
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  
-  // Fetch contact information
-  useEffect(() => {
-    const fetchContactInfo = async () => {
-      try {
-        console.log('ContactSection: Fetching contact info...');
-        const info = await getContactInfo();
-        console.log('ContactSection: Contact info received:', info);
-        setContactInfo(info);
-      } catch (error) {
-        console.error('Error fetching contact info:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchContactInfo();
-  }, []);
-  
+
+
   // Fallback values if data is not available
   const email = contactInfo?.email || 'info@kodenextdoor.com';
   const phone = contactInfo?.phone || '314-665-4673';
   const address = contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110';
   const businessHours = contactInfo?.businessHours?.weekdays || 'Monday - Friday 9:00 am to 2:00pm';
-  
+
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -63,16 +45,16 @@ export default function ContactSection() {
       [name]: value,
     }));
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Reset status
     setIsSubmitting(true);
     setSubmitStatus('idle');
     setErrorMessage(null);
-    
+
     try {
       // Submit to Firebase
       const result = await FirebaseAPI.saveContactSubmission({
@@ -80,10 +62,7 @@ export default function ContactSection() {
         email: formData.email,
         phone: formData.phone || null, // Make phone optional
         message: formData.message,
-        isRead: false,
-        createdAt: new Date(), // This will be converted to serverTimestamp in the API
       });
-      
       if (result.success) {
         // Success handling
         setSubmitStatus('success');
@@ -107,15 +86,15 @@ export default function ContactSection() {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <Section
-      id="contact" 
+      id="contact"
       className="relative overflow-hidden py-24 bg-gray-50 dark:bg-gray-900"
       ref={ref}
     >
       {/* Animated background */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 -z-10 opacity-40 pointer-events-none"
         style={{ y: backgroundY }}
       >
@@ -123,7 +102,7 @@ export default function ContactSection() {
         <div className="absolute top-40 left-10 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl" />
         <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-purple-500/10 blur-3xl" />
       </motion.div>
-      
+
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Contact info */}
@@ -134,7 +113,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="mb-12">
-              <motion.span 
+              <motion.span
                 className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block"
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -143,28 +122,28 @@ export default function ContactSection() {
               >
                 GET IN TOUCH
               </motion.span>
-              
-              <Heading 
-                level="h2" 
-                className="mb-6 text-4xl md:text-5xl font-bold" 
+
+              <Heading
+                level="h2"
+                className="mb-6 text-4xl md:text-5xl font-bold"
                 withGradient
                 withAnimation
               >
                 Let's Discuss Your <span className="text-gradient">Next Project</span>
               </Heading>
-              
+
               <Text variant="large" className="mb-6 text-gray-700 dark:text-gray-300 max-w-xl">
                 We&apos;re here to help with any questions about our services, potential collaborations, or how we can assist with your digital needs.
               </Text>
-              
+
               <Text className="mb-8 text-gray-600 dark:text-gray-400">
                 Let&apos;s start a conversation and discover how we can work together to achieve your goals.
               </Text>
             </div>
-            
+
             {/* Contact methods - Now loaded from database */}
             <div className="space-y-6">
-              <motion.div 
+              <motion.div
                 className="flex items-start space-x-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -178,14 +157,13 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Email Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">We'll respond within 24 hours</p>
                   <a href={`mailto:${email}`} className="text-primary hover:text-primary-dark transition-colors">
                     {email}
                   </a>
                 </div>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="flex items-start space-x-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -199,15 +177,13 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Call Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">{businessHours}</p>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">{contactInfo?.businessHours?.weekends || 'Saturday - Sunday Closed'}</p>
                   <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-primary hover:text-primary-dark transition-colors">
                     {phone}
                   </a>
                 </div>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="flex items-start space-x-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -221,21 +197,13 @@ export default function ContactSection() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Visit Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">Come say hello at our office</p>
-                  <a 
-                    href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-primary hover:text-primary-dark transition-colors"
-                  >
-                    {address}
-                  </a>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Lets Meet In Person</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">Based in Saint Louis, MO</p>
                 </div>
               </motion.div>
             </div>
           </motion.div>
-          
+
           {/* Contact form */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
@@ -246,7 +214,7 @@ export default function ContactSection() {
           >
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
               {submitStatus === 'success' ? (
-                <motion.div 
+                <motion.div
                   className="text-center py-12"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -261,7 +229,7 @@ export default function ContactSection() {
                   <p className="text-gray-700 dark:text-gray-300 mt-2">
                     Thank you for your message! We&apos;ll get back to you as soon as possible.
                   </p>
-                  <Button 
+                  <Button
                     variant="secondary"
                     onClick={() => setSubmitStatus('idle')}
                   >
@@ -271,10 +239,10 @@ export default function ContactSection() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Send us a message</h3>
-                  
+
                   {/* Error message */}
                   {submitStatus === 'error' && (
-                    <motion.div 
+                    <motion.div
                       className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 p-4 rounded-lg mb-4"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -287,7 +255,7 @@ export default function ContactSection() {
                       </div>
                     </motion.div>
                   )}
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -320,7 +288,7 @@ export default function ContactSection() {
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Phone Number (Optional)
@@ -335,7 +303,7 @@ export default function ContactSection() {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Message
@@ -351,19 +319,15 @@ export default function ContactSection() {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                     />
                   </div>
-                  
+
                   <Button
                     type="submit"
                     variant="primary"
-                    className="w-full py-3"
+                    className="w-full py-3 bg-lime-600"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
-                  
-                  <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                    By submitting this form, you agree to our <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
-                  </p>
                 </form>
               )}
             </div>
