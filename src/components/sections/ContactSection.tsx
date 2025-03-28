@@ -157,7 +157,6 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Email Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">We'll respond within 24 hours</p>
                   <a href={`mailto:${email}`} className="text-primary hover:text-primary-dark transition-colors">
                     {email}
                   </a>
@@ -178,8 +177,6 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Call Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">{businessHours}</p>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">{contactInfo?.businessHours?.weekends || 'Saturday - Sunday Closed'}</p>
                   <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-primary hover:text-primary-dark transition-colors">
                     {phone}
                   </a>
@@ -200,16 +197,8 @@ export default function ContactSection() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Visit Us</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">Come say hello at our office</p>
-                  <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:text-primary-dark transition-colors"
-                  >
-                    {address}
-                  </a>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Lets Meet In Person</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-1">Based in Saint Louis, MO</p>
                 </div>
               </motion.div>
             </div>
@@ -334,15 +323,11 @@ export default function ContactSection() {
                   <Button
                     type="submit"
                     variant="primary"
-                    className="w-full py-3"
+                    className="w-full py-3 bg-lime-600"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
-
-                  <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                    By submitting this form, you agree to our <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
-                  </p>
                 </form>
               )}
             </div>
