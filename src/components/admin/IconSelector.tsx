@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 import { 
   FaLaptopCode, FaMobileAlt, FaPalette, FaCloud, FaLock, FaChartLine, 
   FaDatabase, FaCogs, FaRobot, FaBullhorn, FaUserFriends, FaBriefcase,
@@ -110,34 +111,6 @@ const iconsByCategory: Record<string, IconData[]> = {
   ]
 };
 
-// Convert React icon to SVG string
-const iconToSvgString = (Icon: React.FC<React.SVGProps<SVGSVGElement>>): string => {
-  // Create a temporary div to render the icon
-  const tempDiv = document.createElement('div');
-  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  
-  // Set attributes (these match what react-icons uses)
-  icon.setAttribute('stroke', 'currentColor');
-  icon.setAttribute('fill', 'currentColor');
-  icon.setAttribute('stroke-width', '0');
-  icon.setAttribute('viewBox', '0 0 24 24');
-  icon.setAttribute('height', '24');
-  icon.setAttribute('width', '24');
-  
-  // Get the path data from the icon component
-  const iconElement = document.createElement('div');
-  iconElement.innerHTML = Icon({ height: '24', width: '24' } as any).props.children.props.children;
-  
-  // Clone the path nodes into our SVG
-  Array.from(iconElement.querySelectorAll('path')).forEach(path => {
-    icon.appendChild(path.cloneNode(true));
-  });
-  
-  // Add to temp div and get the outerHTML
-  tempDiv.appendChild(icon);
-  return tempDiv.innerHTML;
-};
-
 interface IconSelectorProps {
   value: string;
   onChange: (value: string) => void;
@@ -187,7 +160,7 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
   // Filter icons based on search term and selected category
   const filteredIcons = Object.entries(iconsByCategory)
     .filter(([category]) => !selectedCategory || category === selectedCategory)
-    .flatMap(([_, icons]) => 
+    .flatMap(([, icons]) =>
       icons.filter(icon => 
         icon.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -199,28 +172,33 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
     const IconComponent = iconComponents[iconName];
     
     if (IconComponent) {
-      // Convert React component to SVG string and pass it back
+      // Correctly render the icon to a temporary div to get its SVG string
       try {
-        const iconElement = React.createElement(IconComponent, { size: 24 });
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = ReactDOMServer.renderToStaticMarkup(iconElement);
-        onChange(tempDiv.innerHTML);
-      } catch (error) {
-        console.error('Error converting icon to string:', error);
-        // Fallback method for browsers
-        const iconString = `<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="${getIconPath(iconName)}"></path></svg>`;
-        onChange(iconString);
+        const root = ReactDOM.createRoot(tempDiv);
+        root.render(React.createElement(IconComponent, { size: 24 }));
+        
+        // Use queueMicrotask to read innerHTML after render cycle completes
+        queueMicrotask(() => {
+          const svgString = tempDiv.innerHTML;
+          
+          if (svgString && svgString.startsWith('<svg')) {
+            onChange(svgString);
+          } else {
+            console.error('Failed to capture SVG string from rendered icon (in microtask).');
+            onChange('<svg></svg>');
+          }
+          // Optional: Clean up the root after capturing
+          // root.unmount();
+        });
+
+      } catch (error) { 
+        console.error('Error rendering icon to string:', error);
+        onChange('<svg></svg>');
       }
     }
     
     setIsOpen(false);
-  };
-  
-  // Helper to get icon path data (fallback method)
-  const getIconPath = (iconName: IconName): string => {
-    // This is a simplified fallback that would need actual path data
-    // In a real implementation, you'd need to extract the actual SVG path data
-    return '';
   };
   
   return (
@@ -315,31 +293,4 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
       )}
     </div>
   );
-}
-
-// Fallback implementation of ReactDOMServer for client-side only
-const ReactDOMServer = {
-  renderToStaticMarkup: (element: React.ReactElement): string => {
-    try {
-      // Try to use a simple approach to extract SVG content
-      const IconComponent = element.type;
-      const props = { ...element.props, size: 24 };
-      const tempDiv = document.createElement('div');
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('fill', 'currentColor');
-      svg.setAttribute('stroke-width', '0');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('height', '24');
-      svg.setAttribute('width', '24');
-      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      
-      tempDiv.appendChild(svg);
-      return tempDiv.innerHTML;
-    } catch (e) {
-      console.error('Error in renderToStaticMarkup:', e);
-      return '<svg></svg>';
-    }
-  }
-}; 
+} 
