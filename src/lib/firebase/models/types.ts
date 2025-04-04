@@ -73,7 +73,7 @@ export interface ContactInfo extends BaseDocument {
   };
   socialMedia?: {
     linkedin: string;
-    github: string;
+    instagram: string;
     twitter: string;
   };
   // For backward compatibility with existing code

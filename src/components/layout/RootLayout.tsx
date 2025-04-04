@@ -1,22 +1,27 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Header from './Header';
 import Footer from './Footer';
+import Header from './Header';
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const pathname = usePathname();
+
+
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
-      
+      {pathname === '/' && <Header />}
+
       <AnimatePresence mode="wait">
-        <motion.main 
-          className="flex-grow pt-20"
+        <motion.main
+          className={pathname === '/' ? "flex-grow pt-20" : "flex-grow"}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -25,8 +30,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {children}
         </motion.main>
       </AnimatePresence>
-      
-      <Footer />
+
+      {pathname === '/' && <Footer />}
     </div>
   );
-} 
+}

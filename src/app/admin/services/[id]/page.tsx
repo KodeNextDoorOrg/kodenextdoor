@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import IconSelector from '@/components/admin/IconSelector';
-import { getServiceById, updateService, deleteService } from '@/lib/firebase/api/services';
+import { deleteService, getServiceById, updateService } from '@/lib/firebase/api/services';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 // Service color options - same as new page
 const colorOptions = [
@@ -28,10 +28,10 @@ interface ServiceFormData {
   order: number;
 }
 
-export default function EditServicePage({ params }: { params: { id: string } }) {
+export default function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { id } = params;
-  
+  const { id } = React.use(params);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
     isActive: true,
     order: 0
   });
-  
+
   const [newFeature, setNewFeature] = useState('');
 
   // Fetch service data
@@ -54,7 +54,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       try {
         setIsLoading(true);
         const service = await getServiceById(id);
-        
+
         if (service) {
           setFormData({
             id: service.id,
@@ -76,7 +76,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         setIsLoading(false);
       }
     }
-    
+
     fetchService();
   }, [id]);
 
@@ -107,16 +107,16 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       setIsSubmitting(false);
     }
   }
-  
+
   async function handleDelete() {
     if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       const result = await deleteService(id);
-      
+
       if (result.success) {
         router.push('/admin/services');
       } else {
@@ -205,7 +205,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Icon
           </label>
-          <IconSelector 
+          <IconSelector
             value={formData.icon}
             onChange={(iconValue) => setFormData(prev => ({ ...prev, icon: iconValue }))}
             className="mb-2"
@@ -214,25 +214,25 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             Select an icon from the list or enter a custom SVG code
           </p>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Color Theme
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {colorOptions.map((color) => (
-              <div 
+              <div
                 key={color.value}
                 className={`
                   p-4 rounded-lg cursor-pointer border-2 
-                  ${formData.color === color.value 
-                    ? 'border-primary dark:border-primary' 
+                  ${formData.color === color.value
+                    ? 'border-primary dark:border-primary'
                     : 'border-transparent'}
                   hover:scale-105 transition-transform
                 `}
                 onClick={() => setFormData(prev => ({ ...prev, color: color.value }))}
               >
-                <div 
+                <div
                   className={`h-12 rounded-md mb-2 bg-gradient-to-r ${color.value}`}
                 ></div>
                 <div className="text-xs text-center text-gray-700 dark:text-gray-300">
@@ -242,7 +242,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             ))}
           </div>
         </div>
-        
+
         <div>
           <div className="flex items-center mb-2">
             <input
@@ -312,7 +312,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           >
             Delete Service
           </button>
-        
+
           <div className="flex space-x-4">
             <button
               type="button"

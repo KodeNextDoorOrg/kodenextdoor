@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface Service {
   id: string;
@@ -32,7 +32,7 @@ export default function ServicesPage() {
         id: doc.id,
         ...doc.data()
       })) as Service[];
-      
+
       // Sort services by order
       servicesData.sort((a, b) => a.order - b.order);
       setServices(servicesData);
@@ -47,22 +47,22 @@ export default function ServicesPage() {
   async function toggleServiceActive(id: string, currentStatus: boolean) {
     try {
       const serviceRef = doc(db, 'services', id);
-      
+
       console.log(`Toggling service ${id} from ${currentStatus} to ${!currentStatus}`);
-      
+
       // Always ensure we're setting a proper boolean value, not a string or number
       const newActiveStatus = !currentStatus;
-      
-      await updateDoc(serviceRef, { 
+
+      await updateDoc(serviceRef, {
         isActive: newActiveStatus,
         updatedAt: new Date()
       });
-      
+
       console.log(`Service ${id} active status updated to ${newActiveStatus}`);
-      
+
       // Update local state to reflect the change
-      setServices(prevServices => 
-        prevServices.map(service => 
+      setServices(prevServices =>
+        prevServices.map(service =>
           service.id === id ? { ...service, isActive: newActiveStatus } : service
         )
       );
@@ -104,20 +104,17 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Services</h1>
-      <div className="flex space-x-4 mb-8">
-        <Link href="/admin/services/new" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Create New Service
-        </Link>
-        <Link href="/admin/services/icon-helper" className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
-          Icon Helper
-        </Link>
-        <Link href="/admin/services/fix-icons" className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-          Fix Icons
-        </Link>
-        <Link href="/admin/services/fix-active-status" className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
-          Fix Active Status
+    <div className="p-2 sm:p-4 lg:p-8 max-w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-medium">Services</h1>
+        <Link
+          href="/admin/services/new"
+          className="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors w-full sm:w-auto"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          <span>New Service</span>
         </Link>
       </div>
 
@@ -134,52 +131,50 @@ export default function ServicesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
+            className="bg-white dark:bg-gray-800 p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm"
           >
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="text-2xl" dangerouslySetInnerHTML={{ __html: service.icon }} />
-                  <h2 className="text-xl font-medium text-gray-900 dark:text-white">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                  <div className="text-xl sm:text-2xl" dangerouslySetInnerHTML={{ __html: service.icon }} />
+                  <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white break-words">
                     {service.title}
                   </h2>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    service.isActive 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  }`}>
+                  <span className={`px-2 py-1 text-xs rounded-full ${service.isActive
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    }`}>
                     {service.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 break-words">
                   {service.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {service.features.map((feature) => (
                     <span
                       key={feature}
-                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs sm:text-sm break-words"
                     >
                       {feature}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-end sm:justify-start gap-2">
                 <button
                   onClick={() => toggleServiceActive(service.id, service.isActive)}
-                  className={`p-2 ${
-                    service.isActive 
-                      ? 'text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
-                      : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                  } transition-colors`}
+                  className={`p-2 ${service.isActive
+                    ? 'text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+                    : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    } transition-colors`}
                   title={service.isActive ? 'Deactivate service' : 'Activate service'}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d={service.isActive 
-                        ? "M5 13l4 4L19 7" 
-                        : "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636"} 
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d={service.isActive
+                        ? "M5 13l4 4L19 7"
+                        : "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636"}
                     />
                   </svg>
                 </button>
@@ -206,7 +201,7 @@ export default function ServicesPage() {
 
         {services.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-300">No services found. Add your first service to get started.</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">No services found. Add your first service to get started.</p>
           </div>
         )}
       </div>

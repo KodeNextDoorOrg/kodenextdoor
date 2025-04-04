@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,8 +47,8 @@ const Navbar = () => {
 
   const mobileMenuVariants = {
     closed: { opacity: 0, x: '100%' },
-    open: { 
-      opacity: 1, 
+    open: {
+      opacity: 1,
       x: 0,
       transition: {
         type: 'spring',
@@ -60,17 +60,16 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      className={`fixed w-full z-50 px-6 py-4 transition-all duration-300 ${
-        scrolled
+      className={`fixed w-full z-50 px-6 py-4 transition-all duration-300 ${scrolled
           ? 'bg-background/90 backdrop-blur-md shadow-md'
           : 'bg-transparent'
-      }`}
+        }`}
       initial="hidden"
       animate="visible"
       variants={navVariants}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <motion.div 
+        <motion.div
           className="flex items-center"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -89,7 +88,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link 
+              <Link
                 href={link.href}
                 className="font-medium hover:text-primary transition-colors"
               >
@@ -101,7 +100,7 @@ const Navbar = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link 
+            <Link
               href="#contact"
               className="px-5 py-2 rounded-full bg-primary text-white hover:bg-primary-dark transition-colors"
             >

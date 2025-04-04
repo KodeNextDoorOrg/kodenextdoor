@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface Project {
   id: string;
@@ -35,7 +35,7 @@ export default function ProjectsPage() {
         id: doc.id,
         ...doc.data()
       })) as Project[];
-      
+
       // Sort projects by order
       projectsData.sort((a, b) => a.order - b.order);
       setProjects(projectsData);
@@ -80,11 +80,11 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-medium">Projects</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-medium">Projects</h1>
         <Link
           href="/admin/projects/new"
-          className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors"
+          className="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors w-full sm:w-auto"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -106,33 +106,33 @@ export default function ProjectsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
+            className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm"
           >
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="flex-1">
+                <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white mb-2">
                   {project.title}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs sm:text-sm"
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-wrap gap-4">
                   {project.caseStudyUrl && (
                     <a
                       href={project.caseStudyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary-dark transition-colors"
+                      className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
                     >
                       View Case Study
                     </a>
@@ -142,14 +142,14 @@ export default function ProjectsPage() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary-dark transition-colors"
+                      className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
                     >
                       Live Demo
                     </a>
                   )}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-end sm:justify-start gap-2">
                 <Link
                   href={`/admin/projects/${project.id}`}
                   className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
@@ -173,7 +173,7 @@ export default function ProjectsPage() {
 
         {projects.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-300">No projects found. Add your first project to get started.</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">No projects found. Add your first project to get started.</p>
           </div>
         )}
       </div>
