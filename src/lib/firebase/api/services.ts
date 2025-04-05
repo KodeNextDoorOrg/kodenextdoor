@@ -80,6 +80,14 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
     const allServices = querySnapshot.docs.map(doc => {
       const data = doc.data();
       
+      // *** Add logging here to inspect the raw icon data ***
+      console.log(`Service ${doc.id} - Raw data icon:`, {
+        iconValue: data.icon,
+        iconType: typeof data.icon,
+        dataObject: data // Log the whole data object for context
+      });
+      // *** End added logging ***
+      
       // Normalize isActive to a boolean value regardless of its original type
       // Handle various data types: boolean, string, number
       let isActive: boolean;
@@ -107,12 +115,24 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
         normalized: isActive
       });
       
-      // Return the service with normalized isActive
+      // Return the service with normalized isActive and ensure all properties are present
+      // Explicitly cast to Service to satisfy TypeScript
       return {
         id: doc.id,
-        ...data,
-        isActive: isActive
-      };
+        title: data.title || '', // Provide default values if necessary
+        description: data.description || '',
+        icon: data.icon || '',
+        color: data.color || '',
+        features: data.features || [],
+        order: data.order !== undefined ? data.order : 0, // Ensure order has a default
+        // We keep the original Firestore Timestamps for createdAt/updatedAt if needed, 
+        // or handle their conversion elsewhere if required.
+        // For now, let's assume the Service type expects them as they are from Firestore
+        // or that they are handled correctly downstream.
+        createdAt: data.createdAt, 
+        updatedAt: data.updatedAt,
+        isActive: isActive, // Use the normalized value
+      } as Service; // Cast to Service type
     });
     
     // If activeOnly is true, filter for only active services

@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Section, Container, Heading, Text, Button } from '@/components/ui';
 import { getAllServices } from '@/lib/firebase/api/services';
-import { Service as ServiceType } from '@/lib/firebase/models/types';
+import { isValidSvg, normalizeSvgForReact } from '@/lib/utils/svgUtils';
 
 // Local interface for component-specific props
 interface ServiceDisplayProps {
@@ -16,28 +16,15 @@ interface ServiceDisplayProps {
 }
 
 export default function ServicesSection() {
-  const [activeService, setActiveService] = useState<number | null>(null);
-  const [isClient, setIsClient] = useState(false);
   const [services, setServices] = useState<ServiceDisplayProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const ref = useRef<HTMLDivElement>(null);
-  // Reduced threshold to detect earlier
-  const isInView = useInView(ref, { once: true, amount: 0.01 });
   
   // Track client-side rendering and fetch services
   useEffect(() => {
-    setIsClient(true);
-    
-    // Force scroll event to trigger animations after component mounts
-    const timer = setTimeout(() => {
-      window.dispatchEvent(new Event('scroll'));
-    }, 200);
-    
     fetchServices();
-    
-    return () => clearTimeout(timer);
   }, []);
   
   // Fetch services from Firebase
@@ -59,8 +46,8 @@ export default function ServicesSection() {
         // Filter for active services in the component (as a fallback)
         fetchedServices = fetchedServices.filter(service => {
           console.log(`Manually checking if service ${service.id} is active:`, service.isActive);
-          // Convert various truthy values to boolean
-          return service.isActive === true || service.isActive === 'true' || service.isActive === 1;
+          // Now service.isActive is guaranteed to be boolean by getAllServices
+          return service.isActive === true;
         });
         
         console.log('Services after manual filtering:', fetchedServices);
@@ -96,6 +83,17 @@ export default function ServicesSection() {
       }));
       
       console.log('Mapped displayServices:', displayServices);
+      // Add detailed logging for icon data
+      displayServices.forEach((service, i) => {
+        console.log(`Service ${i+1} icon:`, {
+          title: service.title,
+          iconExists: !!service.icon,
+          iconLength: service.icon ? service.icon.length : 0,
+          iconStartsWithSvg: service.icon ? service.icon.trim().startsWith('<svg') : false,
+          iconEndsWithSvg: service.icon ? service.icon.trim().endsWith('</svg>') : false,
+          iconPreview: service.icon ? service.icon.substring(0, 30) + '...' : 'no icon'
+        });
+      });
       setServices(displayServices);
     } catch (err) {
       console.error('Error loading services:', err);
@@ -170,16 +168,19 @@ export default function ServicesSection() {
             <span className="text-gradient">Digital Success</span>
           </Heading>
           
-          <Text
-            variant="light" 
-            className="max-w-2xl mx-auto text-lg"
+          <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            We offer a comprehensive range of tech services designed to help businesses innovate, grow, and succeed in today&apos;s digital landscape.
-          </Text>
+            <Text
+              variant="light" 
+              className="max-w-2xl mx-auto text-lg"
+            >
+              We offer a comprehensive range of tech services designed to help businesses innovate, grow, and succeed in today&apos;s digital landscape.
+            </Text>
+          </motion.div>
         </motion.div>
         
         {isLoading ? (
@@ -360,8 +361,20 @@ const ServiceCard = ({ service, index }: { service: ServiceDisplayProps; index: 
         <motion.div 
           animate={isHovered ? { rotate: 360 } : { rotate: 0 }}
           transition={{ duration: 0.5 }}
-          dangerouslySetInnerHTML={{ __html: service.icon }}
-        />
+          className="flex items-center justify-center w-8 h-8 text-white"
+        >
+          {isValidSvg(service.icon) ? (
+            <div 
+              dangerouslySetInnerHTML={{ 
+                __html: normalizeSvgForReact(service.icon)
+              }}
+            />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          )}
+        </motion.div>
       </motion.div>
       
       {/* Service content with animation */}

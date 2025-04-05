@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface ContactInfo {
   email: string;
@@ -12,7 +12,7 @@ interface ContactInfo {
   address: string;
   socialMedia: {
     linkedin: string;
-    github: string;
+    instagram: string;
     twitter: string;
   };
   businessHours: {
@@ -33,7 +33,7 @@ export default function ContactPage() {
     address: '',
     socialMedia: {
       linkedin: '',
-      github: '',
+      instagram: '',
       twitter: '',
     },
     businessHours: {
@@ -45,7 +45,7 @@ export default function ContactPage() {
   useEffect(() => {
     // Check authentication status
     if (!auth) return;
-    
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Redirect to login if not authenticated
@@ -173,7 +173,7 @@ export default function ContactPage() {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white">Social Media Links</h2>
-          
+
           <div>
             <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               LinkedIn
@@ -192,15 +192,15 @@ export default function ContactPage() {
 
           <div>
             <label htmlFor="github" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              GitHub
+              Instragram
             </label>
             <input
               type="url"
-              id="github"
-              value={contactInfo.socialMedia.github}
+              id="instagram"
+              value={contactInfo.socialMedia.instagram}
               onChange={(e) => setContactInfo({
                 ...contactInfo,
-                socialMedia: { ...contactInfo.socialMedia, github: e.target.value }
+                socialMedia: { ...contactInfo.socialMedia, instagram: e.target.value }
               })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
@@ -225,7 +225,7 @@ export default function ContactPage() {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white">Business Hours</h2>
-          
+
           <div>
             <label htmlFor="weekdays" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Weekdays
