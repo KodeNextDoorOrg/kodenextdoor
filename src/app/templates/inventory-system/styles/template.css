@@ -1,0 +1,382 @@
+/* Inventory System Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* --- Variables & Base --- */
+:root {
+  --is-font-sans: 'Inter', sans-serif;
+
+  --is-bg-sidebar: #1f2937;    /* Dark Gray-Blue */
+  --is-bg-content: #f3f4f6;    /* Light Gray */
+  --is-bg-card: #ffffff;
+  --is-text-primary: #111827;  /* Very Dark Gray */
+  --is-text-secondary: #6b7280;/* Medium Gray */
+  --is-text-sidebar: #d1d5db;  /* Light Gray (Sidebar Text) */
+  --is-text-sidebar-active: #ffffff;
+  --is-accent-primary: #3b82f6; /* Blue */
+  --is-accent-secondary: #10b981;/* Green */
+  --is-border-color: #e5e7eb;  /* Light Gray Border */
+  --is-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.is-root {
+  font-family: var(--is-font-sans);
+  background-color: var(--is-bg-content);
+  color: var(--is-text-primary);
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* --- Layout Structure --- */
+.is-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- Sidebar --- */
+.is-sidebar {
+  width: 260px;
+  background-color: var(--is-bg-sidebar);
+  color: var(--is-text-sidebar);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed; /* Fixed Sidebar */
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width 0.3s ease;
+}
+
+/* Optional: Collapsed sidebar state */
+/* .is-sidebar.collapsed { width: 80px; } */
+
+.is-sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 1.5rem 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.is-sidebar-logo svg { /* Placeholder for logo icon */
+  width: 32px;
+  height: 32px;
+  margin-right: 0.8rem;
+  fill: var(--is-accent-primary);
+}
+
+.is-sidebar-logo span {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--is-text-sidebar-active);
+}
+
+.is-sidebar nav {
+  flex-grow: 1;
+}
+
+.is-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.is-sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  color: var(--is-text-sidebar);
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.is-sidebar nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--is-text-sidebar-active);
+}
+
+.is-sidebar nav ul li a.is-active {
+  background-color: var(--is-accent-primary);
+  color: var(--is-text-sidebar-active);
+  font-weight: 600;
+}
+
+.is-sidebar nav ul li a svg { /* Placeholder for nav icons */
+  width: 20px;
+  height: 20px;
+  margin-right: 0.8rem;
+  stroke-width: 1.5;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.is-sidebar nav ul li a:hover svg,
+.is-sidebar nav ul li a.is-active svg {
+  opacity: 1;
+}
+
+/* --- Main Content Area --- */
+.is-main-content {
+  flex-grow: 1;
+  margin-left: 260px; /* Match sidebar width */
+  padding: 2rem 2.5rem;
+  transition: margin-left 0.3s ease;
+}
+
+/* Adjust content margin if sidebar collapses */
+/* .is-sidebar.collapsed + .is-main-content { margin-left: 80px; } */
+
+/* --- Content Header --- */
+.is-content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--is-border-color);
+}
+
+.is-content-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.is-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Placeholder styles for header actions (search, notifications, profile) */
+.is-header-search input {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--is-border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.is-header-notifications button,
+.is-header-profile button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--is-text-secondary);
+}
+.is-header-notifications button svg,
+.is-header-profile button svg {
+  width: 24px; height: 24px;
+}
+
+/* --- Dashboard Widgets --- */
+.is-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.is-widget {
+  background-color: var(--is-bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--is-shadow);
+  border: 1px solid var(--is-border-color);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.is-widget.is-animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.is-widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.is-widget-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--is-text-primary);
+}
+
+.is-widget-icon { /* Placeholder for icons */
+  color: var(--is-text-secondary);
+}
+.is-widget-icon svg {
+    width: 24px; height: 24px;
+}
+
+.is-widget-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.is-widget-change {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+.is-widget-change svg { width: 16px; height: 16px; margin-right: 0.3rem;}
+.is-widget-change.positive { color: var(--is-accent-secondary); }
+.is-widget-change.negative { color: #ef4444; /* Red */ }
+
+/* --- Chart Placeholder --- */
+.is-chart-container {
+  background-color: var(--is-bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--is-shadow);
+  border: 1px solid var(--is-border-color);
+  margin-bottom: 2.5rem;
+  min-height: 300px; /* Placeholder height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--is-text-secondary);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s;
+}
+.is-chart-container.is-animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Data Table Placeholder --- */
+.is-table-container {
+  background-color: var(--is-bg-card);
+  border-radius: 8px;
+  box-shadow: var(--is-shadow);
+  border: 1px solid var(--is-border-color);
+  overflow-x: auto; /* Allow horizontal scroll */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s;
+}
+.is-table-container.is-animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.is-table {
+  width: 100%;
+  min-width: 600px; /* Prevent excessive squishing */
+  border-collapse: collapse;
+}
+
+.is-table th,
+.is-table td {
+  padding: 0.9rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid var(--is-border-color);
+  font-size: 0.9rem;
+}
+
+.is-table th {
+  font-weight: 600;
+  color: var(--is-text-secondary);
+  background-color: #f9fafb; /* Slightly off-white header */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+}
+
+.is-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.is-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* --- Buttons --- */
+.is-btn {
+  display: inline-flex; /* Use flex for icon alignment */
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+}
+
+.is-btn svg { /* Icon spacing */
+    width: 18px; height: 18px;
+    margin-right: 0.5rem;
+}
+
+.is-btn-primary {
+  background-color: var(--is-accent-primary);
+  color: #fff;
+  border-color: var(--is-accent-primary);
+}
+
+.is-btn-primary:hover {
+  background-color: #2563eb; /* Darker Blue */
+  border-color: #2563eb;
+}
+
+.is-btn-secondary {
+  background-color: var(--is-bg-card);
+  color: var(--is-text-primary);
+  border-color: var(--is-border-color);
+}
+
+.is-btn-secondary:hover {
+  background-color: #f9fafb; /* Slightly off-white hover */
+  border-color: #d1d5db;
+}
+
+/* --- Animations --- */
+/* Basic fade-in/up used via JS adding class */
+.is-animate-in {
+    /* Transitions defined on elements */
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .is-sidebar {
+    /* Example: Hide sidebar on small screens or make it collapsible */
+    position: absolute;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1100;
+  }
+  .is-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .is-main-content {
+    margin-left: 0; /* Full width content */
+    padding: 1.5rem;
+  }
+
+  .is-content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .is-widget-grid {
+    grid-template-columns: 1fr; /* Stack widgets */
+  }
+
+  /* Add mobile menu toggle button if needed */
+} 

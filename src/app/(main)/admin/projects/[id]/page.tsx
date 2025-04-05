@@ -7,19 +7,10 @@ import { db } from '@/lib/firebase';
 import { Project } from '@/lib/firebase/models/types';
 import { updateProject } from '@/lib/firebase/api/projects';
 import Link from 'next/link';
-import { getProjectById } from '@/lib/firebase/api/projects';
-import { ProjectForm } from '@/components/admin/ProjectForm';
 
-// Use the standard interface for params in app router
-interface EditProjectPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EditProjectPage({ params }: EditProjectPageProps) {
-  const { id } = params;
-  const router = useRouter();
+export default function EditProjectPage() {
+  const params = useParams<{ id: string }>();
+  const id = params.id;
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -34,11 +25,17 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     technologies: '',
     features: '',
     isActive: true,
-    order: 0
+    order: 0,
+    liveUrl: ''
   });
 
-  // Fetch project data on component mount
   useEffect(() => {
+    if (!id) {
+      setError('Project ID is missing.');
+      setIsLoading(false);
+      return;
+    }
+
     async function fetchProject() {
       try {
         setIsLoading(true);
@@ -49,7 +46,6 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
           const projectData = { id: docSnap.id, ...docSnap.data() } as Project;
           setProject(projectData);
           
-          // Initialize form data from project
           setFormData({
             title: projectData.title || '',
             description: projectData.description || '',
@@ -58,7 +54,8 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             technologies: projectData.technologies?.join(', ') || '',
             features: projectData.features?.join(', ') || '',
             isActive: projectData.isActive ?? true,
-            order: projectData.order || 0
+            order: projectData.order || 0,
+            liveUrl: projectData.liveUrl || ''
           });
         } else {
           setError('Project not found');
@@ -78,20 +75,21 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
-      // Handle checkbox input
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
     } else if (name === 'order') {
-      // Ensure order is a number
       setFormData(prev => ({ ...prev, [name]: parseInt(value) || 0 }));
     } else {
-      // Handle text/select inputs
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) {
+        setError('Cannot save project without an ID.');
+        return;
+    }
     setIsSaving(true);
     setError(null);
     setSuccessMessage(null);
@@ -107,7 +105,6 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
       
       if (result.success) {
         setSuccessMessage('Project updated successfully!');
-        // Update the local state with new data
         setProject({
           ...project!,
           ...processedData
@@ -193,7 +190,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -208,7 +205,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -223,7 +220,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             rows={4}
             required
           />
@@ -239,8 +236,23 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             required
+          />
+        </div>
+        
+        <div className="mb-6">
+          <label htmlFor="liveUrl" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Live URL
+          </label>
+          <input
+            id="liveUrl"
+            type="url"
+            name="liveUrl"
+            value={formData.liveUrl}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            placeholder="https://example.com"
           />
         </div>
         
@@ -255,7 +267,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               name="technologies"
               value={formData.technologies}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="React, Next.js, Firebase"
             />
           </div>
@@ -270,7 +282,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               name="features"
               value={formData.features}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Authentication, Real-time updates"
             />
           </div>
@@ -287,19 +299,19 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               name="order"
               value={formData.order}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               min="0"
             />
           </div>
           
-          <div className="flex items-center">
+          <div className="flex items-center pt-6">
             <input
               id="isActive"
               type="checkbox"
               name="isActive"
               checked={formData.isActive}
               onChange={handleInputChange}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
             />
             <label htmlFor="isActive" className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Active (visible on website)
@@ -307,20 +319,18 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 mt-8">
           <button
             type="submit"
-            disabled={isSaving}
-            className={`px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors ${
-              isSaving ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
+            disabled={isSaving || !id}
+            className={`px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isSaving ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
           
           <Link
             href="/admin/projects"
-            className="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
           >
             Cancel
           </Link>
