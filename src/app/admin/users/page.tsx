@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface AdminUser {
   id: string;
@@ -31,7 +30,7 @@ export default function AdminUsersPage() {
   useEffect(() => {
     // Check authentication status
     if (!auth) return;
-    
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Redirect to login if not authenticated
@@ -53,7 +52,7 @@ export default function AdminUsersPage() {
       // Query admin users
       const adminQuery = query(collection(db, 'users'), where('role', '==', 'admin'));
       const adminSnapshot = await getDocs(adminQuery);
-      
+
       const admins: AdminUser[] = [];
       adminSnapshot.forEach((doc) => {
         const data = doc.data();
@@ -104,25 +103,25 @@ export default function AdminUsersPage() {
       });
 
       setSuccessMessage(`Admin account for ${newUserEmail} created successfully!`);
-      
+
       // Reset form
       setNewUserEmail('');
       setNewUserPassword('');
       setConfirmPassword('');
       setShowNewUserForm(false);
-      
+
       // Refresh list
       fetchAdminUsers();
     } catch (error) {
       const firebaseError = error as { code?: string, message: string };
-      
+
       const errorMap: Record<string, string> = {
         'auth/email-already-in-use': 'This email is already registered.',
         'auth/invalid-email': 'Please provide a valid email address.',
         'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
         'auth/operation-not-allowed': 'Account creation is disabled.',
       };
-      
+
       setFormError(
         firebaseError.code && errorMap[firebaseError.code]
           ? errorMap[firebaseError.code]
@@ -167,8 +166,8 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Admin Users</h1>
-        <button 
-          onClick={() => setShowNewUserForm(prev => !prev)} 
+        <button
+          onClick={() => setShowNewUserForm(prev => !prev)}
           className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors"
         >
           {showNewUserForm ? 'Cancel' : 'Add New Admin'}
@@ -184,13 +183,13 @@ export default function AdminUsersPage() {
       {showNewUserForm && (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold mb-4">Create New Admin User</h2>
-          
+
           {formError && (
             <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md text-red-800 dark:text-red-300 mb-4">
               <p>{formError}</p>
             </div>
           )}
-          
+
           <form onSubmit={handleCreateAdmin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -255,42 +254,64 @@ export default function AdminUsersPage() {
           <p>No admin users found.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
-            <thead className="bg-gray-100 dark:bg-gray-700">
-              <tr>
-                <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 text-sm font-medium">Email</th>
-                <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 text-sm font-medium">Created At</th>
-                <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 text-sm font-medium">Last Updated</th>
-                <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 text-sm font-medium">Last Login</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {adminUsers.map((admin) => (
-                <tr key={admin.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                  <td className="py-3 px-4 text-gray-800 dark:text-gray-200">{admin.email}</td>
-                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{formatDate(admin.createdAt)}</td>
-                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{formatDate(admin.updatedAt)}</td>
-                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{formatDate(admin.lastLogin || 'Never')}</td>
+        <>
+          {/* Mobile Card View */}
+          <div className="block sm:hidden space-y-4">
+            {adminUsers.map((user) => (
+              <div key={user.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="space-y-3">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</h3>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-white break-words">{user.email}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Created At</h3>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-white">{formatDate(user.createdAt)}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Last Login</h3>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-white">{formatDate(user.lastLogin || 'Never')}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Created At
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Last Login
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {adminUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {user.email}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(user.createdAt)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(user.lastLogin || 'Never')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
-      
-      <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-2">Admin Access Information</h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-2">
-          Each admin user has full access to the admin portal and can:
-        </p>
-        <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-          <li>Manage projects and services</li>
-          <li>Update company information</li>
-          <li>View contact form submissions</li>
-          <li>Create additional admin accounts</li>
-        </ul>
-      </div>
     </div>
   );
 } 
