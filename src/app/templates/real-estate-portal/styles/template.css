@@ -1,0 +1,362 @@
+/* Real Estate Portal Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+/* --- Variables & Base --- */
+:root {
+  --rep-font-sans: 'Source Sans 3', sans-serif;
+
+  /* Clean & Trustworthy Palette */
+  --rep-bg-sidebar: #ffffff;
+  --rep-bg-content: #f8f9fa;    /* Very Light Gray */
+  --rep-bg-card: #ffffff;
+  --rep-text-primary: #212529;  /* Dark Gray */
+  --rep-text-secondary: #6c757d;/* Medium Gray */
+  --rep-text-sidebar: #495057;  /* Darker Sidebar Text */
+  --rep-text-sidebar-active: #0d6efd; /* Primary Blue */
+  --rep-primary: #0d6efd;       /* Primary Blue */
+  --rep-secondary: #6c757d;    /* Gray */
+  --rep-success: #198754;       /* Green */
+  --rep-warning: #ffc107;       /* Yellow */
+  --rep-danger: #dc3545;        /* Red */
+  --rep-border-color: #dee2e6;  /* Light Gray Border */
+  --rep-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+  --rep-sidebar-width: 240px;
+}
+
+.rep-root {
+  font-family: var(--rep-font-sans);
+  background-color: var(--rep-bg-content);
+  color: var(--rep-text-primary);
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* --- Layout Structure --- */
+.rep-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- Sidebar --- */
+.rep-sidebar {
+  width: var(--rep-sidebar-width);
+  background-color: var(--rep-bg-sidebar);
+  color: var(--rep-text-sidebar);
+  border-right: 1px solid var(--rep-border-color);
+  padding: 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width 0.3s ease;
+}
+
+.rep-sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rep-border-color);
+}
+
+.rep-sidebar-logo svg { /* Placeholder logo */
+  width: 30px;
+  height: 30px;
+  margin-right: 0.7rem;
+  fill: var(--rep-primary);
+}
+
+.rep-sidebar-logo span {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--rep-text-primary);
+}
+
+.rep-sidebar nav {
+  flex-grow: 1;
+}
+
+.rep-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rep-sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--rep-text-sidebar);
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 0.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease, border-left 0.2s ease;
+  font-size: 0.98rem;
+  font-weight: 500;
+  border-left: 3px solid transparent; /* For active state */
+}
+
+.rep-sidebar nav ul li a:hover {
+  background-color: #e9ecef; /* Light hover */
+  color: var(--rep-text-primary);
+}
+
+.rep-sidebar nav ul li a.rep-active {
+  background-color: #e7f1ff; /* Light blue active bg */
+  color: var(--rep-text-sidebar-active);
+  border-left-color: var(--rep-primary);
+  font-weight: 600;
+}
+
+.rep-sidebar nav ul li a svg { /* Nav icons */
+  width: 18px;
+  height: 18px;
+  margin-right: 0.9rem;
+  stroke-width: 1.5;
+  opacity: 0.9;
+  transition: color 0.2s ease;
+}
+
+.rep-sidebar nav ul li a:hover svg,
+.rep-sidebar nav ul li a.rep-active svg {
+  color: var(--rep-primary);
+}
+
+/* --- Main Content Area --- */
+.rep-main-content {
+  flex-grow: 1;
+  margin-left: var(--rep-sidebar-width);
+  padding: 2rem 2.5rem;
+  transition: margin-left 0.3s ease;
+}
+
+/* --- Content Header --- */
+.rep-content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  background-color: var(--rep-bg-card);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--rep-border-color);
+  box-shadow: var(--rep-shadow);
+}
+
+.rep-content-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.rep-header-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.rep-user-avatar { /* Placeholder */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--rep-secondary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.rep-user-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* --- Dashboard Cards --- */
+.rep-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.rep-card {
+  background-color: var(--rep-bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--rep-shadow);
+  border: 1px solid var(--rep-border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.rep-card-header {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--rep-text-secondary);
+}
+
+.rep-card-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--rep-text-primary);
+}
+
+/* --- List Container --- */
+.rep-list-container {
+  background-color: var(--rep-bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--rep-shadow);
+  border: 1px solid var(--rep-border-color);
+  margin-bottom: 2.5rem;
+}
+
+.rep-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rep-border-color);
+}
+
+.rep-list-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.rep-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rep-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #f1f3f5; /* Lighter internal border */
+  font-size: 0.95rem;
+}
+.rep-list-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rep-item-details span {
+    display: block;
+    line-height: 1.4;
+}
+.rep-item-details .rep-item-title { font-weight: 500; }
+.rep-item-details .rep-item-meta { font-size: 0.85rem; color: var(--rep-text-secondary);}
+
+.rep-item-status span {
+    padding: 0.25rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.rep-status-paid { background-color: #d1e7dd; color: #0f5132; } /* Success */
+.rep-status-pending { background-color: #fff3cd; color: #664d03; } /* Warning */
+.rep-status-open { background-color: #cfe2ff; color: #0a58ca; } /* Primary */
+.rep-status-closed { background-color: #e9ecef; color: #495057; } /* Secondary */
+
+/* --- Buttons --- */
+.rep-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+}
+
+.rep-btn svg { width: 16px; height: 16px; margin-right: 0.4rem; }
+
+.rep-btn-primary {
+  background-color: var(--rep-primary);
+  color: #fff;
+  border-color: var(--rep-primary);
+}
+.rep-btn-primary:hover {
+  background-color: #0b5ed7; /* Darker Blue */
+  border-color: #0a58ca;
+}
+
+.rep-btn-secondary {
+  background-color: var(--rep-secondary);
+  color: #fff;
+  border-color: var(--rep-secondary);
+}
+.rep-btn-secondary:hover {
+  background-color: #5c636a;
+  border-color: #565e64;
+}
+
+.rep-btn-outline {
+  background-color: transparent;
+  color: var(--rep-primary);
+  border-color: var(--rep-primary);
+}
+.rep-btn-outline:hover {
+  background-color: var(--rep-primary);
+  color: #fff;
+}
+
+/* --- Animations --- */
+/* Simple fade-in for elements */
+.rep-fade-in {
+    opacity: 0;
+    animation: repFadeIn 0.6s ease-out forwards;
+}
+@keyframes repFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .rep-sidebar {
+    position: absolute;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1100;
+  }
+  .rep-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .rep-main-content {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+
+  .rep-content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .rep-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Add mobile menu toggle button if needed */
+} 
