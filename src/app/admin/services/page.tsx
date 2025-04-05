@@ -5,6 +5,7 @@ import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firesto
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { isValidSvg } from '@/lib/utils/svgUtils';
 
 interface Service {
   id: string;
