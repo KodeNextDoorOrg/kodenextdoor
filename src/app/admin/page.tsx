@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { collection, getDocs, DocumentData } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { collection, DocumentData, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Stats {
   projects: number;
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Check authentication status
     if (!auth) return;
-    
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Redirect to login if not authenticated
@@ -107,124 +107,124 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Projects Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Projects</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Projects</h2>
             <Link
               href="/admin/projects"
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
             >
               View All
             </Link>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.projects}</p>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Total Projects</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.projects}</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Total Projects</p>
         </div>
 
         {/* Services Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Services</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Services</h2>
             <Link
               href="/admin/services"
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
             >
               View All
             </Link>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.services}</p>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Active Services</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.services}</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Active Services</p>
         </div>
 
         {/* Client Satisfaction Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Client Satisfaction</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Client Satisfaction</h2>
             <Link
               href="/admin/company"
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
             >
               Update
             </Link>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             {stats.companyInfo.clientSatisfaction}%
           </p>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Average Rating</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Average Rating</p>
         </div>
 
         {/* Years Experience Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Experience</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Experience</h2>
             <Link
               href="/admin/company"
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
             >
               Update
             </Link>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             {stats.companyInfo.yearsExperience}
           </p>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Years of Experience</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Years of Experience</p>
         </div>
 
         {/* Projects Completed Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Completed</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Completed</h2>
             <Link
               href="/admin/company"
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
             >
               Update
             </Link>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             {stats.companyInfo.projectsCompleted}
           </p>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Projects Completed</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Projects Completed</p>
         </div>
 
         {/* Quick Actions Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Quick Actions</h2>
           <div className="space-y-2">
             <Link
               href="/admin/projects/new"
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Add New Project
             </Link>
             <Link
               href="/admin/services/new"
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Add New Service
             </Link>
             <Link
               href="/admin/messages"
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               View Contact Messages
             </Link>
             <Link
               href="/admin/contact"
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
               Update Contact Info

@@ -1,31 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Project } from '@/lib/firebase/models/types';
 import { updateProject } from '@/lib/firebase/api/projects';
+import { Project } from '@/lib/firebase/models/types';
+import { doc, getDoc } from 'firebase/firestore';
 import Link from 'next/link';
-import { getProjectById } from '@/lib/firebase/api/projects';
-import { ProjectForm } from '@/components/admin/ProjectForm';
+import React, { useEffect, useState } from 'react';
 
-// Use the standard interface for params in app router
-interface EditProjectPageProps {
-  params: {
-    id: string;
-  };
-}
 
-export default function EditProjectPage({ params }: EditProjectPageProps) {
-  const { id } = params;
-  const router = useRouter();
+
+export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -44,11 +35,11 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         setIsLoading(true);
         const docRef = doc(db, 'projects', id);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           const projectData = { id: docSnap.id, ...docSnap.data() } as Project;
           setProject(projectData);
-          
+
           // Initialize form data from project
           setFormData({
             title: projectData.title || '',
@@ -76,7 +67,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       // Handle checkbox input
       const checked = (e.target as HTMLInputElement).checked;
@@ -95,7 +86,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     setIsSaving(true);
     setError(null);
     setSuccessMessage(null);
-    
+
     try {
       const processedData = {
         ...formData,
@@ -104,7 +95,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
       };
 
       const result = await updateProject(id, processedData);
-      
+
       if (result.success) {
         setSuccessMessage('Project updated successfully!');
         // Update the local state with new data
@@ -144,7 +135,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
           {error}
         </div>
-        <Link 
+        <Link
           href="/admin/projects"
           className="inline-flex items-center text-primary hover:underline"
         >
@@ -168,13 +159,13 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
           <span>Back to Projects</span>
         </Link>
       </div>
-      
+
       {successMessage && (
         <div className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 p-4 rounded-lg mb-6">
           {successMessage}
         </div>
       )}
-      
+
       {error && (
         <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
           {error}
@@ -197,7 +188,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               required
             />
           </div>
-          
+
           <div>
             <label htmlFor="category" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Category
@@ -213,7 +204,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             />
           </div>
         </div>
-        
+
         <div className="mb-6">
           <label htmlFor="description" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Description
@@ -228,7 +219,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             required
           />
         </div>
-        
+
         <div className="mb-6">
           <label htmlFor="imageUrl" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Image URL
@@ -243,7 +234,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             required
           />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label htmlFor="technologies" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -259,7 +250,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               placeholder="React, Next.js, Firebase"
             />
           </div>
-          
+
           <div>
             <label htmlFor="features" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Features (comma separated)
@@ -275,7 +266,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             />
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label htmlFor="order" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -291,7 +282,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
               min="0"
             />
           </div>
-          
+
           <div className="flex items-center">
             <input
               id="isActive"
@@ -306,18 +297,17 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             </label>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <button
             type="submit"
             disabled={isSaving}
-            className={`px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors ${
-              isSaving ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
+            className={`px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors ${isSaving ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
-          
+
           <Link
             href="/admin/projects"
             className="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"

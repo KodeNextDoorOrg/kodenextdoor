@@ -38,6 +38,11 @@ export default function HomePage() {
         <LandingSection />
       </section>
 
+      {/* Project showcase with light background */}
+      <section className="bg-white dark:bg-gray-950">
+        <ProjectShowcaseSection />
+      </section>
+
       {/* Services section with white background */}
       <section>
         <ServicesSection />
@@ -46,11 +51,6 @@ export default function HomePage() {
       {/* About section with light background */}
       <section className="bg-gray-50 dark:bg-gray-900">
         <AboutSection />
-      </section>
-
-      {/* Project showcase with light background */}
-      <section className="bg-white dark:bg-gray-950">
-        <ProjectShowcaseSection />
       </section>
 
       {/* Contact section */}
