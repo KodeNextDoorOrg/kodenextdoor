@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 
 interface LayoutProps {
@@ -6,16 +7,14 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  // Add state later for mobile sidebar toggle
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <div className="rep-layout">
-      {/* Pass state/toggle function later: <Sidebar isOpen={isSidebarOpen} /> */}
-      <Sidebar /> 
-      <main className="rep-main-content">
+    <div className="rep-root">
+      <div className="rep-layout">
+        <Sidebar activePath={pathname} />
         {children}
-      </main>
+      </div>
     </div>
   );
 };

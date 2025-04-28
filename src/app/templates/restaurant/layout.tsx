@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
-import './styles/template.css';
+import './styles/medalina.css';
 
 export const metadata: Metadata = {
-  title: 'Savory Restaurant',
-  description: 'Experience culinary excellence in an elegant atmosphere',
+  title: 'Medalina - Craft BBQ',
+  description: 'Serving up DC\'s best blend of classic BBQ traditions and elevated flavors.',
 };
 
-export default function RestaurantLayout({
+export default function MedalinaLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className="rt-root">
+      <body className="medalina-root">
         {children}
       </body>
     </html>
