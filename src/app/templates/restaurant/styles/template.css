@@ -1,27 +1,23 @@
-/* Template-specific styles inspired by Delbar ATL - Enhanced */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Lato:wght@300;400;700&display=swap');
+/* EIS-LAB styles - Ice Cream Shop Template */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 /* --- Base & Variables --- */
-.rt-root {
-  /* Delbar Inspired Palette */
-  --rt-bg-main: #f9f6f1;        /* Warm off-white/beige */
-  --rt-bg-dark: #2c3e50;        /* Deep slate/dark blue-grey (adjust as needed) */
-  --rt-text-dark: #363434;     /* Dark charcoal */
-  --rt-text-light: #f8f8f8;
-  --rt-primary-accent: #b8860b; /* Gold/Brass accent */
-  --rt-secondary-accent: #8a7967; /* Muted earthy tone */
-  --rt-border-color: #e0dccc;   /* Light border for cards/dividers */
+.eislab-root {
+  /* EIS-LAB Inspired Palette */
+  --eislab-bg-main: #ffffff;      /* Clean white background */
+  --eislab-bg-accent: #f5f5f5;    /* Light gray for sections */
+  --eislab-text-primary: #000000; /* Black text */
+  --eislab-text-secondary: #555555; /* Darker gray for secondary text */
+  --eislab-accent: #ff6b6b;       /* Pink/coral accent */
+  --eislab-border: #eaeaea;       /* Light border color */
 
-  --rt-font-serif: 'Playfair Display', serif;
-  --rt-font-sans: 'Lato', sans-serif;
-  --rt-section-padding: 6rem 0; /* Increased padding slightly */
+  --eislab-font-primary: 'Montserrat', sans-serif;
+  --eislab-section-padding: 6rem 0;
 
-  font-family: var(--rt-font-sans);
-  color: var(--rt-text-dark);
-  background-color: var(--rt-bg-main);
-  /* Subtle background texture */
-  /* background-image: url('/images/subtle-noise.png'); */ /* Optional: Add a subtle texture image */
-  line-height: 1.75; /* Slightly more breathable */
+  font-family: var(--eislab-font-primary);
+  color: var(--eislab-text-primary);
+  background-color: var(--eislab-bg-main);
+  line-height: 1.6;
   font-weight: 400;
   margin: 0;
   padding: 0;
@@ -29,134 +25,134 @@
   overflow-x: hidden;
 }
 
-.rt-root h1,
-.rt-root h2,
-.rt-root h3,
-.rt-root h4,
-.rt-root h5,
-.rt-root h6 {
-  font-family: var(--rt-font-serif);
-  font-weight: 600;
-  color: var(--rt-text-dark);
-  line-height: 1.3;
-  margin-bottom: 1.5rem;
+.eislab-root h1,
+.eislab-root h2,
+.eislab-root h3,
+.eislab-root h4,
+.eislab-root h5,
+.eislab-root h6 {
+  font-family: var(--eislab-font-primary);
+  font-weight: 700;
+  color: var(--eislab-text-primary);
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
 }
 
-.rt-root h1 { font-size: clamp(3rem, 5.5vw, 4.5rem); }
-.rt-root h2 { font-size: clamp(2.2rem, 4.5vw, 3rem); text-align: center; }
-.rt-root h3 { font-size: clamp(1.6rem, 3vw, 2rem); }
-.rt-root p { margin-bottom: 1.5rem; color: #555; /* Darker paragraph text */ font-size: 1.08rem; }
-.rt-root a { color: var(--rt-primary-accent); text-decoration: none; transition: color 0.3s ease, opacity 0.3s ease; }
-.rt-root a:hover { color: var(--rt-secondary-accent); opacity: 0.85; }
+.eislab-root h1 { 
+  font-size: clamp(3.5rem, 7vw, 5rem); 
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.eislab-root h2 { 
+  font-size: clamp(2rem, 4vw, 2.8rem); 
+  text-transform: uppercase;
+  text-align: center; 
+}
+
+.eislab-root h3 { 
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem); 
+}
+
+.eislab-root h4 { 
+  font-size: clamp(1.1rem, 2vw, 1.4rem); 
+  text-transform: uppercase;
+}
+
+.eislab-root p { 
+  margin-bottom: 1.5rem;
+  color: var(--eislab-text-secondary);
+  font-size: 1.1rem; 
+}
+
+.eislab-root a { 
+  color: var(--eislab-text-primary); 
+  text-decoration: none; 
+  transition: color 0.3s ease, opacity 0.3s ease; 
+}
+
+.eislab-root a:hover { 
+  color: var(--eislab-accent); 
+}
+
+/* --- Container --- */
+.eislab-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
 
 /* --- Header --- */
-.rt-header {
+.eislab-header {
   position: fixed;
   width: 100%;
   z-index: 1000;
   transition: background-color 0.5s ease, box-shadow 0.5s ease, padding 0.5s ease;
   background-color: transparent;
-  padding: 2rem 0; /* More initial padding */
+  padding: 1.5rem 0;
 }
 
-.rt-header.scrolled {
-  background-color: rgba(249, 246, 241, 0.95); /* Slightly transparent beige */
+.eislab-header.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 1.3rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
 }
 
-.rt-header nav .rt-container {
+.eislab-header nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.rt-header .rt-logo {
-  font-family: var(--rt-font-serif);
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: var(--rt-text-light);
+.eislab-header .eislab-logo {
+  font-family: var(--eislab-font-primary);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #000;
   text-decoration: none;
-  transition: color 0.5s ease;
   letter-spacing: 1px;
-}
-
-.rt-header.scrolled .rt-logo {
-  color: var(--rt-text-dark);
-}
-
-.rt-header nav a {
-  color: var(--rt-text-light);
-  text-decoration: none;
-  margin-left: 2.2rem;
-  position: relative;
-  transition: color 0.5s ease;
-  padding-bottom: 0.4rem; /* Slightly more space for underline */
-  font-weight: 400;
-  font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.8px; /* Wider spacing */
 }
 
-.rt-header.scrolled nav a {
-  color: var(--rt-text-dark);
+.eislab-header nav a {
+  color: #000;
+  text-decoration: none;
+  margin-left: 2rem;
+  position: relative;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.rt-header nav a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 1px;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--rt-primary-accent);
-  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
-}
-
-.rt-header nav a:hover {
-  color: var(--rt-primary-accent);
-}
-
-.rt-header.scrolled nav a:hover {
-  color: var(--rt-primary-accent);
-}
-
-.rt-header nav a:hover::after {
-  width: 90%; /* More pronounced underline */
+.eislab-header nav a:hover {
+  color: var(--eislab-accent);
 }
 
 /* Mobile Menu Button Style */
-.rt-mobile-menu-btn {
+.eislab-mobile-menu-btn {
     background: none;
     border: none;
     padding: 0.5rem;
     cursor: pointer;
-    z-index: 1051; /* Above overlay */
-    position: relative; /* Needed for z-index */
-}
-.rt-mobile-menu-btn svg {
-    stroke: var(--rt-text-light);
-    transition: stroke 0.5s ease;
-}
-.rt-header.scrolled .rt-mobile-menu-btn svg {
-    stroke: var(--rt-text-dark);
-}
-/* Change icon color when overlay is open */
-.rt-root.mobile-menu-open .rt-mobile-menu-btn svg {
-    stroke: var(--rt-text-dark);
+  z-index: 1051;
+  position: relative;
 }
 
+.eislab-mobile-menu-btn svg {
+  stroke: #000;
+}
 
 /* --- Mobile Menu Overlay --- */
-.rt-mobile-menu-overlay {
+.eislab-mobile-menu-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--rt-bg-main);
+  background-color: #fff;
     z-index: 1050;
     display: flex;
     flex-direction: column;
@@ -166,456 +162,450 @@
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
 }
-.rt-root.mobile-menu-open .rt-mobile-menu-overlay {
+
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay {
     opacity: 1;
     visibility: visible;
 }
-.rt-mobile-menu-overlay nav a {
+
+.eislab-mobile-menu-overlay nav a {
     display: block;
-    color: var(--rt-text-dark);
-    font-size: 1.8rem; /* Larger font size */
-    font-family: var(--rt-font-serif);
+  color: #000;
+  font-size: 1.8rem;
+  font-weight: 700;
     margin: 1.5rem 0;
     text-align: center;
+  text-transform: uppercase;
     opacity: 0;
     transform: translateY(20px);
     transition: color 0.3s ease, opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
 }
-.rt-root.mobile-menu-open .rt-mobile-menu-overlay nav a {
+
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay nav a {
     opacity: 1;
     transform: translateY(0);
 }
-/* Stagger link animation */
-.rt-root.mobile-menu-open .rt-mobile-menu-overlay nav a:nth-child(2) { transition-delay: 0.25s; }
-.rt-root.mobile-menu-open .rt-mobile-menu-overlay nav a:nth-child(3) { transition-delay: 0.3s; }
-.rt-root.mobile-menu-open .rt-mobile-menu-overlay nav a:nth-child(4) { transition-delay: 0.35s; }
 
-.rt-mobile-menu-overlay nav a:hover {
-    color: var(--rt-primary-accent);
+/* Stagger link animation */
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay nav a:nth-child(2) { transition-delay: 0.25s; }
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay nav a:nth-child(3) { transition-delay: 0.3s; }
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay nav a:nth-child(4) { transition-delay: 0.35s; }
+.eislab-root.mobile-menu-open .eislab-mobile-menu-overlay nav a:nth-child(5) { transition-delay: 0.4s; }
+
+.eislab-mobile-menu-overlay nav a:hover {
+  color: var(--eislab-accent);
 }
 
 /* --- Hero Section --- */
-.rt-hero {
+.eislab-hero {
   position: relative;
-  min-height: 95vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0 2rem;
+  background-color: #f8f8f8;
+}
+
+.eislab-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.eislab-hero-content h1 {
+  font-size: clamp(4rem, 10vw, 7rem);
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 2rem;
+}
+
+.eislab-hero-content p {
+  font-size: 1.2rem;
+  max-width: 600px;
+}
+
+/* --- About Section --- */
+.eislab-about-section {
+  padding: var(--eislab-section-padding);
+  background-color: #fff;
   text-align: center;
-  color: var(--rt-text-light);
+}
+
+.eislab-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 4rem 0;
+}
+
+.eislab-feature-card {
+  padding: 2rem;
+  text-align: center;
+}
+
+.eislab-feature-card h3 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.eislab-feature-card p {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.eislab-about-us {
+  margin-top: 5rem;
+}
+
+.eislab-image-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.eislab-gallery-img {
+  position: relative;
   overflow: hidden;
+  aspect-ratio: 1;
+  border-radius: 4px;
 }
 
-.rt-hero::before { /* Overlay */
-  content: '';
-  position: absolute;
-  inset: 0;
-  /* Reduce opacity for more visible background image */
-  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)); /* Example: Lighter overlay */
-  z-index: 1;
-}
-
-.rt-hero-image-wrapper {
-  position: absolute;
-  inset: -60px; /* Slightly more inset for parallax */
-  z-index: 0;
-}
-
-.rt-hero-image-wrapper img {
+.eislab-gallery-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.95); /* Slightly desaturate/darken image */
+  transition: transform 0.4s ease;
 }
 
-.rt-hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 800px;
-  padding: 1rem;
-  animation: rt-fadeInUp 1.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0.7s forwards;
-  opacity: 0;
+.eislab-gallery-img:hover img {
+  transform: scale(1.05);
 }
 
-.rt-hero-content h1 {
-    color: var(--rt-text-light);
-    font-size: clamp(3.8rem, 8vw, 6rem);
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
-    margin-bottom: 1.2rem;
-    font-style: italic;
+/* --- Products Section --- */
+.eislab-products-section {
+  padding: var(--eislab-section-padding);
+  background-color: #f8f8f8;
 }
 
-.rt-hero-content p {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
-    margin-bottom: 3rem;
-    font-weight: 300;
-    max-width: 550px;
-    margin-left: auto;
-    margin-right: auto;
+.eislab-flavors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+  margin: 4rem 0;
 }
 
-/* --- Buttons (Delbar Style) - Enhanced Visibility --- */
-.rt-btn {
-  display: inline-block;
-  padding: 0.85rem 2rem; /* Slightly larger padding */
-  border: 2px solid transparent; /* Increased border thickness */
+.eislab-flavor-card {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.eislab-flavor-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.eislab-flavor-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.eislab-products-cta {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+/* --- Location Section --- */
+.eislab-location-section {
+  padding: var(--eislab-section-padding);
+  background-color: #fff;
+  text-align: center;
+}
+
+.eislab-welcome-text {
+  margin-bottom: 4rem;
+}
+
+.eislab-welcome-text h2 {
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.eislab-stores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.eislab-store-image {
+  overflow: hidden;
   border-radius: 4px;
+}
+
+.eislab-store-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.eislab-store-image:hover img {
+  transform: scale(1.03);
+}
+
+.eislab-store-count {
+  margin-top: 3rem;
+}
+
+.eislab-store-count h2 {
+  font-size: 5rem;
+  margin-bottom: 0;
+}
+
+.eislab-store-count p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.eislab-btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border: 2px solid #000;
+  border-radius: 0;
+  background: none;
+  color: #000;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.eislab-btn:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+/* --- Social Media Section --- */
+.eislab-social-section {
+  padding: var(--eislab-section-padding);
+  background-color: #f8f8f8;
   text-align: center;
-  /* Removed text-shadow for better visibility */
 }
 
-.rt-btn-primary {
-  background-color: var(--rt-primary-accent);
-  /* Change text to explicit dark hex code */
-  color: #363434;
+.eislab-social-section h4 {
+  margin-bottom: 0.5rem;
 }
 
-.rt-btn-primary:hover {
-  background-color: #a3760a; /* Slightly darker gold */
-  border-color: #a3760a;
-  /* Keep text dark on hover */
-  color: #363434;
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+.eislab-social-section p {
+  margin-bottom: 3rem;
+  font-weight: 500;
 }
 
-.rt-btn-secondary {
-  /* Add semi-transparent light background */
-  background-color: rgba(249, 246, 241, 0.8); /* Use --rt-bg-main with alpha */
-  /* Change text to explicit dark hex code */
-  color: #363434;
-  border-color: var(--rt-primary-accent);
+.eislab-social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
-.rt-btn-secondary:hover {
-  /* Make background slightly more opaque or change */
-  background-color: rgba(249, 246, 241, 0.95);
-  /* Keep text dark on hover */
-  color: #363434;
-  border-color: #a3760a;
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-/* Ensure primary button text is dark specifically in hero */
-.rt-hero-content .rt-btn-primary {
-  color: #363434; /* Force dark color */
-}
-
-/* Ensure primary button text is dark specifically in reservation section */
-.rt-reservation-section .rt-btn-primary {
-  color: #363434; /* Force dark color */
-}
-
-/* --- Sections General --- */
-.rt-section {
-    padding: var(--rt-section-padding);
-    position: relative;
+.eislab-social-img {
+  aspect-ratio: 1;
     overflow: hidden;
+  position: relative;
 }
 
-.rt-text-center { text-align: center; }
-
-/* Decorative Border Example */
-.rt-decorative-border-top::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 2px;
-    background-color: var(--rt-border-color);
+.eislab-social-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-/* --- Welcome/Intro Section --- */
-.rt-welcome-section {
-    background-color: var(--rt-bg-main);
-}
-.rt-welcome-content {
-    max-width: 850px;
-    margin: 0 auto;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(40px);
-}
-.rt-welcome-content.rt-animate-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 1s ease-out, transform 1s ease-out;
+.eislab-social-img:hover img {
+  transform: scale(1.05);
 }
 
-.rt-welcome-content h2 {
-    margin-bottom: 2rem; /* Restore original margin */
-}
-
-/* --- Menu Teaser Section --- */
-.rt-menu-teaser {
-    background-color: #fff; /* White background for contrast */
-    border-top: 1px solid var(--rt-border-color);
-    border-bottom: 1px solid var(--rt-border-color);
-}
-
-/* New Grid Layout for Teaser */
-.rt-menu-teaser-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Stack by default */
-    gap: 3rem;
-    align-items: center;
-}
-
-@media (min-width: 768px) {
-    .rt-menu-teaser-grid {
-        grid-template-columns: repeat(2, 1fr); /* Side-by-side on medium screens */
-        gap: 4rem;
-    }
-}
-
-.rt-menu-teaser-image {
-    /* Animation applied via JS */
-    opacity: 0;
-    transform: translateX(-30px);
-}
-.rt-menu-teaser-image.rep-fade-in { /* Use existing animation class name or create new */
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 1s ease-out, transform 1s ease-out;
-}
-.rt-menu-teaser-image img {
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
-    max-height: 450px; /* Limit height */
-    object-fit: cover;
-}
-
-.rt-menu-teaser-content {
-    text-align: left;
-    /* Animation applied via JS */
-    opacity: 0;
-    transform: translateX(30px);
-}
-.rt-menu-teaser-content.rep-fade-in {
-     opacity: 1;
-    transform: translateX(0);
-    transition: opacity 1s ease-out, transform 1s ease-out;
-}
-
-.rt-menu-teaser-content h2 {
-    text-align: left;
-    margin-bottom: 0.5rem; /* Reduced margin */
-}
-
-.rt-menu-teaser-content h3 {
-    text-align: left;
-}
-
-.rt-menu-teaser-content p {
-    max-width: 100%; /* Remove max-width for grid layout */
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 1rem;
-}
-
-/* --- Location/Hours Section --- */
-.rt-location-section {
-    background-color: var(--rt-bg-main);
-}
-.rt-location-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 3.5rem;
-    align-items: start;
-}
-.rt-location-card {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 1s ease-out, transform 1s ease-out, box-shadow 0.3s ease;
-    padding: 2rem; /* Add padding */
-    border: 1px solid transparent; /* Prepare for hover border */
-    border-radius: 4px;
-}
-.rt-location-card.rt-animate-in {
-    opacity: 1;
-    transform: translateY(0);
-}
-/* Subtle hover for location card */
-.rt-location-card:hover {
-    border-color: var(--rt-border-color);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-}
-
-.rt-location-card h3 {
-    color: var(--rt-primary-accent);
-    margin-bottom: 1rem;
-}
-.rt-location-card p {
-    margin-bottom: 0.6rem;
-    font-size: 1.03rem;
-    color: #4a4848;
-}
-.rt-location-card strong { font-weight: 700; color: var(--rt-text-dark);}
-.rt-location-card a { font-weight: 700; }
-
-/* --- Reservation Section (Simpler) --- */
-.rt-reservation-section {
-  background-color: var(--rt-bg-dark);
-  color: var(--rt-text-light);
+/* --- Franchise Section --- */
+.eislab-franchise-section {
+  padding: var(--eislab-section-padding);
+  background-color: #fff;
   text-align: center;
-  background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/dark-texture-placeholder.jpg'); /* << UPDATE IMAGE */
-  background-size: cover;
-  background-position: center center;
-  background-blend-mode: overlay;
 }
-.rt-reservation-section h2 {
-  color: var(--rt-primary-accent);
+
+.eislab-franchise-content {
+  max-width: 800px;
+    margin: 0 auto;
+}
+
+.eislab-franchise-content h2 {
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+
+.eislab-franchise-content p {
+  margin-bottom: 2rem;
+}
+
+.eislab-franchise-content h3 {
+  font-weight: 500;
   margin-bottom: 1.5rem;
-  font-size: clamp(2.2rem, 4.8vw, 3.2rem);
 }
-.rt-reservation-section p {
-    color: rgba(255, 255, 255, 0.9);
-    max-width: 550px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 3rem;
-    font-size: 1.15rem;
-}
-.rt-reservation-button-wrapper {
-    opacity: 0;
-    transform: translateY(40px);
-}
-.rt-reservation-button-wrapper.rt-animate-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 1s ease-out 0.2s, transform 1s ease-out 0.2s; /* Slight delay */
+
+.eislab-franchise-content .eislab-btn {
+  margin-top: 2rem;
 }
 
 /* --- Footer --- */
-.rt-footer {
-  background-color: #ece8df;
-  color: var(--rt-text-dark);
-  padding: 4.5rem 0 2.5rem 0;
-  font-size: 0.98rem;
+.eislab-footer {
+  padding: 5rem 0 2rem;
+  background-color: #fafafa;
 }
 
-.rt-footer .rt-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjust minmax */
-    gap: 3rem;
-    margin-bottom: 3.5rem;
-    text-align: center;
+.eislab-footer-content {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-@media (min-width: 768px) {
-    .rt-footer .rt-container {
-        text-align: left;
-    }
+.eislab-footer-content > p {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 4rem;
 }
 
-.rt-footer h4 {
-    font-family: var(--rt-font-sans);
-    font-weight: 700;
-    color: var(--rt-text-dark);
-    margin-bottom: 1.2rem;
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
+.eislab-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
 }
 
-.rt-footer p, .rt-footer li {
-    margin-bottom: 0.6rem;
-    color: #555;
-}
-.rt-footer li a {
-    color: #555; /* Match paragraph color */
+.eislab-footer-nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
 }
 
-.rt-footer ul {
-    list-style: none;
-    padding: 0;
+.eislab-footer-nav ul li {
+  margin-right: 2rem;
+    margin-bottom: 1rem;
+}
+
+.eislab-footer-nav ul li a {
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.eislab-social-links {
+  display: flex;
+}
+
+.eislab-social-links a {
+  margin-left: 1.5rem;
+  font-weight: 500;
+}
+
+.eislab-newsletter {
+  margin-bottom: 4rem;
+}
+
+.eislab-newsletter h3 {
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.eislab-newsletter-form {
+  display: flex;
+  max-width: 500px;
+}
+
+.eislab-newsletter-form input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  font-family: var(--eislab-font-primary);
+}
+
+.eislab-newsletter-form button {
+  padding: 0.8rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-family: var(--eislab-font-primary);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.eislab-newsletter-form button:hover {
+  background-color: #333;
+}
+
+.eislab-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.eislab-footer-bottom a,
+.eislab-footer-bottom p {
+  font-size: 0.9rem;
+  color: #777;
     margin: 0;
 }
 
-.rt-footer a:hover {
-    color: var(--rt-primary-accent);
-}
-
-.rt-social-links a {
-    display: inline-block;
-    margin-right: 1rem;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-.rt-social-links a:hover {
-    opacity: 1;
-}
-
-.rt-footer-bottom {
-    border-top: 1px solid var(--rt-border-color);
-    padding-top: 2.5rem;
-    text-align: center;
-    font-size: 0.92rem;
-    color: #777;
-}
-
-
-/* --- Animations --- */
-@keyframes rt-fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(45px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Scroll Animation Trigger Class */
-.rt-animate-in {
-  /* Base styles (opacity: 0, transform: ...) defined on elements */
-}
-
-
-/* --- Responsive Adjustments --- */
+/* --- Responsive Styles --- */
 @media (max-width: 768px) {
-  .rt-root h1 { font-size: clamp(2.8rem, 7vw, 4rem); }
-  .rt-root h2 { font-size: clamp(2rem, 6vw, 2.6rem); }
-  .rt-hero { min-height: 90vh; }
-  .rt-header nav .md\:flex { display: none; }
-  .rt-header .rt-mobile-menu-btn { display: block; }
-
-  .rt-section {
-      padding: 4.5rem 0;
-  }
-
-  .rt-location-grid {
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
-  }
-}
-
-/* Utility */
-.rt-container {
-    width: 100%;
-    max-width: 1320px; /* Even wider */
-    margin: 0 auto;
+  .eislab-hero {
     padding: 0 1.5rem;
 }
 
-/* Remove old redundant styles if any remain */
-.rt-section-padding, .rt-image-hover, .rt-form-input, .rt-section-divider {
-    /* Delete these rules if they exist */
+  .eislab-features-grid {
+    grid-template-columns: 1fr;
 }
 
-/* Prevent body scroll when mobile menu is open */
-.rt-body-no-scroll {
+  .eislab-image-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .eislab-flavors-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .eislab-footer-nav {
+    flex-direction: column;
+  }
+  
+  .eislab-social-links {
+    margin-top: 2rem;
+  }
+  
+  .eislab-newsletter-form {
+    flex-direction: column;
+  }
+  
+  .eislab-newsletter-form input {
+    margin-bottom: 1rem;
+  }
+
+  .eislab-footer-bottom {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .eislab-footer-bottom a {
+    margin-bottom: 1rem;
+  }
+}
+
+/* --- Utility Classes --- */
+.eislab-section {
+  padding: 5rem 0;
+}
+
+.eislab-body-no-scroll {
     overflow: hidden;
 } 

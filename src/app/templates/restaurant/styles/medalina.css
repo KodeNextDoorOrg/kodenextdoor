@@ -1,0 +1,1531 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
+/* Federalist Pig / Medalina Template Styles */
+
+/* --- Base & Variables --- */
+.medalina-root {
+  --medalina-bg: #fec80a; /* Federalist yellow */
+  --medalina-text: #000000; /* Black text */
+  --medalina-bg-footer: #000000; /* Black footer */
+  --medalina-text-footer: #ffffff; /* White footer text */
+  --medalina-font-heading: 'Oswald', sans-serif;
+  --medalina-font-body: 'Roboto', sans-serif;
+  --medalina-header-height: 80px; /* Adjust as needed */
+  --medalina-yellow: #f3cc30; /* Updated Federalist Pig yellow */
+  --medalina-dark: #000000;
+  --medalina-red: #e53e3e;
+  --medalina-light: #f7fafc;
+}
+
+body.medalina-root {
+  background-color: var(--medalina-yellow);
+  color: var(--medalina-text);
+  font-family: var(--medalina-font-body);
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Typography --- */
+.medalina-root h1,
+.medalina-root h2,
+.medalina-root h3,
+.medalina-root h4 {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.medalina-root h2 { 
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  letter-spacing: 0.05em;
+}
+
+.medalina-root p { 
+  line-height: 1.6;
+  margin-bottom: 1.5rem; 
+  font-size: 1rem;
+}
+
+/* --- Layout & Container --- */
+.medalina-container {
+  width: 100%;
+  max-width: 1200px; /* Adjust as needed */
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.medalina-section {
+  padding: 4rem 0;
+}
+
+/* --- Header --- */
+.medalina-header {
+  background-color: var(--medalina-yellow);
+  padding: 20px 30px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Logo Styling */
+.logo a {
+  text-decoration: none;
+  display: block;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.9;
+}
+
+.logo-top {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 34px;
+  color: var(--medalina-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.logo-bottom {
+  font-family: var(--medalina-font-heading);
+  font-weight: 900;
+  font-size: 40px;
+  color: var(--medalina-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Logo Ticker */
+.logo-ticker {
+  background-color: black;
+  overflow: hidden;
+  padding: 20px 0;
+  position: relative;
+}
+
+.ticker-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.ticker-title h3 {
+  color: var(--medalina-yellow);
+  font-family: var(--medalina-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.ticker-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-wrapper {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 30px;
+}
+
+.ticker-logo {
+  height: 40px;
+  color: var(--medalina-yellow);
+}
+
+.ticker-logo text {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ticker-item span {
+  display: inline-block;
+  color: var(--medalina-yellow);
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause animation on hover */
+.ticker-wrapper:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .ticker-item {
+    padding: 0 20px;
+  }
+  
+  .ticker-item span {
+    font-size: 1.2rem;
+  }
+}
+
+/* Navigation */
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  margin-right: 25px;
+}
+
+.nav-link {
+  color: var(--medalina-text);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  margin: 0 12px;
+  text-decoration: none; 
+}
+
+.order-button {
+  color: var(--medalina-text);
+  background-color: transparent;
+  border: 2px solid var(--medalina-text);
+  padding: 10px 16px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+
+.menu-button {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .header-right {
+    display: none;
+  }
+  .menu-button {
+  display: block;
+  }
+.medalina-header {
+    height: auto;
+    padding: 15px;
+  }
+  .logo-top {
+    font-size: 24px;
+  }
+  .logo-bottom {
+    font-size: 28px;
+  }
+}
+
+/* Ensure container and inner flex div take full width */
+.medalina-header .medalina-container,
+.medalina-header .medalina-container > div {
+  width: 100%;
+}
+
+/* Target the logo link specifically */
+.medalina-logo {
+  line-height: 1; /* Prevent extra space */
+}
+
+.medalina-logo-svg text {
+  font-family: var(--medalina-font-heading); /* Ensure Oswald is used */
+  font-weight: 700;
+  font-size: 28px; /* Match the SVG */
+}
+
+.medalina-logo-svg text:first-of-type { /* "MEDA" */
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.medalina-logo-svg text:last-of-type { /* "LINA" */
+  fill: #000;
+  }
+
+/* Adjust desktop navigation spacing and link styles */
+.medalina-header nav a,
+.medalina-header .nav-link {
+  font-family: var(--medalina-font-heading);
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+  color: var(--medalina-text);
+  display: inline-block;
+  margin-right: 1.5rem;
+}
+
+.medalina-header .hidden.lg\:flex {
+  display: flex;
+  align-items: center;
+}
+
+.medalina-header .hidden.lg\:flex a:last-child {
+  margin-right: 0;
+}
+
+.medalina-header nav a:hover,
+.medalina-header .nav-link:hover {
+  color: #444; /* Darker hover */
+}
+
+/* Style for the dropdown arrow */
+.medalina-dropdown-arrow {
+  font-size: 0.6rem; /* Make arrow smaller */
+  display: inline-block;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+/* --- Buttons --- */
+.medalina-btn {
+  display: inline-block;
+  font-family: var(--medalina-font-heading);
+  background-color: transparent;
+  color: var(--medalina-text);
+  border: 2px solid var(--medalina-text);
+  padding: 0.6rem 1.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.medalina-btn:hover {
+  background-color: var(--medalina-text);
+  color: var(--medalina-bg);
+}
+
+.medalina-btn-header {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+/* --- Mobile Menu --- */
+.medalina-mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--medalina-text);
+}
+
+.medalina-mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--medalina-bg);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+.medalina-mobile-menu-overlay.open {
+  transform: translateX(0);
+}
+
+.medalina-mobile-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--medalina-text);
+  font-size: 1.5rem;
+}
+
+.medalina-mobile-menu-overlay nav {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.medalina-mobile-menu-overlay nav a {
+  font-family: var(--medalina-font-heading);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  padding: 0.8rem 0;
+  color: var(--medalina-text);
+}
+
+.medalina-btn-mobile-overlay {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 250px;
+  text-align: center;
+}
+
+.medalina-mobile-socials {
+  margin-top: 2rem;
+  font-size: 1.5rem;
+}
+.medalina-mobile-socials a {
+  margin: 0 0.5rem;
+}
+
+.medalina-body-no-scroll {
+  overflow: hidden;
+}
+
+/* --- Hero Section --- */
+.medalina-hero {
+  position: relative;
+  min-height: calc(90vh - var(--medalina-header-height)); /* Adjust height */
+  overflow: hidden;
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: calc(90vh - var(--medalina-header-height));
+}
+
+/* Carousel Slides */
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s ease-in-out;
+  overflow: hidden;
+}
+
+.carousel-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.3); /* Dark overlay */
+  z-index: 1;
+}
+
+.carousel-content {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(243, 204, 48, 0.85); /* Semi-transparent yellow */
+  padding: 2rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.carousel-content h2 {
+  color: var(--medalina-text);
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.carousel-content p {
+  color: var(--medalina-text);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+/* Carousel Controls */
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(243, 204, 48, 0.8);
+  color: var(--medalina-text);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-control:hover {
+  background-color: rgba(243, 204, 48, 1);
+}
+
+.carousel-control.prev {
+  left: 20px;
+}
+
+.carousel-control.next {
+  right: 20px;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+  background-color: rgba(243, 204, 48, 0.8);
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--medalina-text);
+  opacity: 0.4;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-dot.active {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .carousel-content {
+    width: 90%;
+    max-width: 450px;
+    padding: 1.5rem;
+}
+
+  .carousel-content h2 {
+    font-size: 1.8rem;
+  }
+  
+  .carousel-content p {
+    font-size: 1rem;
+  }
+  
+  .carousel-control {
+    width: 40px;
+    height: 40px;
+}
+
+  .carousel-control.prev {
+    left: 10px;
+  }
+  
+  .carousel-control.next {
+    right: 10px;
+}
+}
+
+@media (max-width: 480px) {
+  .carousel-content {
+    padding: 1rem;
+}
+
+  .carousel-content h2 {
+    font-size: 1.5rem;
+}
+}
+
+/* --- Specials & Supper Club Section --- */
+.medalina-section-dual h2 {
+  margin-bottom: 1.5rem;
+}
+.medalina-section-dual p {
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+}
+
+.medalina-dual-image {
+  overflow: hidden; /* Ensure image stays within bounds */
+}
+
+.medalina-dual-image img {
+  transition: transform 0.3s ease;
+}
+
+.medalina-dual-image:hover img {
+  transform: scale(1.03);
+}
+
+/* --- Menu Section --- */
+.medalina-section-menu {
+  background-image: url('/images/medalina-menu-bg.jpg'); /* Placeholder texture */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.medalina-section-menu::before { /* Dark overlay for readability */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 1;
+}
+
+.medalina-section-menu .medalina-container {
+  position: relative; /* Above overlay */
+  z-index: 2;
+  color: #fff; /* White text on dark background */
+}
+
+.medalina-section-menu h2 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.medalina-section-menu p {
+  color: #eee; /* Lighter gray text */
+  margin-bottom: 2rem;
+}
+
+.medalina-section-menu .medalina-btn {
+  border-color: #fff;
+  color: #fff;
+}
+
+.medalina-section-menu .medalina-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* --- Catering Section --- */
+.medalina-section-catering {
+  background-color: var(--medalina-bg); /* Keep the yellow */
+}
+
+.medalina-section-catering h2 {
+  margin-bottom: 1.5rem;
+}
+
+.medalina-section-catering p {
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.medalina-catering-image {
+   overflow: hidden;
+}
+
+.medalina-catering-image img {
+  transition: transform 0.3s ease;
+}
+
+.medalina-catering-image:hover img {
+  transform: scale(1.03);
+}
+
+/* --- Footer --- */
+.medalina-footer {
+  background-color: var(--medalina-bg-footer);
+  color: var(--medalina-text-footer);
+  padding: 20px 0 10px;
+}
+
+/* Footer Main */
+.medalina-footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.medalina-footer-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.medalina-footer-nav a {
+  color: var(--medalina-text-footer);
+  font-size: 0.85rem;
+  margin: 0 12px;
+  text-transform: uppercase;
+  font-family: var(--medalina-font-heading);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.medalina-footer-nav a:hover {
+  opacity: 0.8;
+}
+
+.medalina-footer-socials {
+  display: flex;
+  gap: 15px;
+}
+
+.medalina-footer-socials a {
+  color: var(--medalina-bg);
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.medalina-footer-socials a:hover {
+  opacity: 0.8;
+}
+
+.medalina-footer-socials svg {
+  width: 20px;
+  height: 20px;
+}
+
+.medalina-footer-signup-btn {
+  text-align: right;
+}
+
+.medalina-btn-footer {
+  display: inline-block;
+  font-family: var(--medalina-font-heading);
+  background-color: transparent;
+  color: var(--medalina-bg);
+  border: 2px solid var(--medalina-bg);
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.medalina-btn-footer:hover {
+  background-color: var(--medalina-bg);
+  color: var(--medalina-bg-footer);
+}
+
+/* Footer Bottom */
+.medalina-footer-bottom {
+  padding-top: 25px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-family: var(--medalina-font-heading);
+}
+
+/* Footer Signup Form */
+.medalina-footer-signup {
+  padding: 2rem 0;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--medalina-bg-footer);
+  padding: 30px;
+  border: 1px solid #333;
+  z-index: 1100;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.medalina-footer-signup h3 {
+  color: var(--medalina-text-footer);
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+  font-family: var(--medalina-font-heading);
+}
+
+.medalina-input {
+  background-color: #222;
+  border: 1px solid #444;
+  color: var(--medalina-text-footer);
+  padding: 0.8rem 1rem;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.medalina-input::placeholder {
+  color: #888;
+}
+
+.medalina-signup-success p {
+  color: #ccc;
+}
+
+.medalina-signup-success button {
+  color: var(--medalina-bg);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .medalina-footer-main {
+    flex-direction: column;
+    gap: 20px;
+}
+
+  .medalina-footer-nav {
+    order: 2;
+    margin: 20px 0;
+}
+
+  .medalina-footer-socials {
+    order: 1;
+}
+
+  .medalina-footer-signup-btn {
+    order: 3;
+    text-align: center;
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) { /* lg breakpoint */
+  .medalina-header nav {
+    /* Mobile menu handled by button */
+  }
+}
+
+@media (max-width: 768px) { /* md breakpoint */
+  .medalina-section {
+    padding: 3rem 0;
+}
+
+  .medalina-hero {
+    min-height: 70vh;
+}
+
+  .medalina-section-dual .grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+  .medalina-section-catering .grid {
+     grid-template-columns: 1fr;
+     gap: 2rem;
+}
+  .medalina-section-catering .medalina-catering-image {
+    order: 1; /* Image first on mobile */
+  }
+   .medalina-section-catering div[class*="text-center"] {
+     order: 2; /* Text second */
+  text-align: center;
+}
+
+   .medalina-footer-main {
+     padding: 2rem 0;
+}
+.medalina-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+     justify-content: center;
+     gap: 0.5rem 1rem;
+  }
+    .medalina-footer-nav a {
+  margin: 0;
+}
+   .medalina-footer-signup {
+     padding: 2rem 0;
+  margin-top: 2rem;
+}
+   .medalina-footer-signup .grid {
+      grid-template-columns: 1fr;
+   }
+}
+
+/* Content Sections - Federalist Pig Style */
+.section-dual,
+.section-menu,
+.section-catering {
+  background-color: var(--medalina-yellow);
+  padding: 4rem 0;
+}
+
+.section-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.section-column {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 15px;
+  text-align: center;
+}
+
+.section-dual .section-column {
+  flex-basis: 50%;
+  max-width: 600px;
+  margin: 0 auto;
+  }
+  
+.section-image {
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.dual-img, 
+.img-cover {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.section-title {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+    font-size: 2rem;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  color: var(--medalina-text);
+  text-align: center;
+}
+
+.section-text {
+  font-family: var(--medalina-font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  }
+  
+.section-btn {
+  display: inline-block;
+  background-color: transparent;
+  border: 2px solid var(--medalina-text);
+  color: var(--medalina-text);
+  padding: 0.75rem 1rem;
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+  }
+
+.section-btn:hover {
+  background-color: var(--medalina-text);
+  color: var(--medalina-yellow);
+}
+
+/* Menu and Catering Sections */
+.section-menu .section-container,
+.section-catering .section-container {
+    align-items: center;
+  }
+  
+.section-text-col {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 2rem;
+  }
+
+.section-img-col {
+  flex: 1;
+  min-width: 300px;
+  }
+  
+.section-menu .section-text-col,
+.section-catering .section-text-col {
+  order: 0;
+  }
+  
+.section-menu .section-img-col,
+.section-catering .section-img-col {
+  order: 1;
+  }
+  
+.section-catering .section-text-col {
+  order: 1;
+  }
+  
+.section-catering .section-img-col {
+  order: 0;
+  }
+  
+.full-img {
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.full-img .img-cover {
+  height: 100%;
+  object-fit: cover;
+  }
+  
+/* Mobile Responsiveness */
+@media (max-width: 992px) {
+  .section-column {
+    flex: 100%;
+    max-width: 100%;
+    margin-bottom: 3rem;
+  }
+  
+  .section-dual .section-column:last-child {
+    margin-bottom: 0;
+  }
+  
+  .section-menu .section-text-col,
+  .section-menu .section-img-col,
+  .section-catering .section-text-col,
+  .section-catering .section-img-col {
+    order: 0;
+  }
+  
+  .section-img-col {
+    margin-bottom: 2rem;
+  }
+  
+  .section-catering .section-text-col {
+    margin-bottom: 0;
+  }
+}
+
+/* Social Feed Section */
+.social-feed {
+  background-color: var(--medalina-yellow);
+  padding: 4rem 0 6rem;
+  }
+  
+.social-title {
+  font-family: var(--medalina-font-heading);
+  font-weight: 800;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: var(--medalina-text);
+  }
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 20px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+  }
+  
+.social-item {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+  }
+  
+.social-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+  }
+  
+.social-item:hover .social-img {
+  transform: scale(1.05);
+  }
+  
+@media (max-width: 768px) {
+  .social-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .social-title {
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-grid {
+    gap: 10px;
+  }
+} 
+
+/* Menu Page Styles */
+.medalina-menu-page {
+  background-color: var(--medalina-bg);
+  color: var(--medalina-text);
+  padding: 2rem 0 4rem;
+}
+
+.medalina-menu-hero {
+  position: relative;
+  padding: 8rem 0 5rem;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.medalina-menu-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.medalina-hero-img {
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  }
+
+.medalina-menu-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7); /* Dark overlay for text readability */
+  z-index: 2;
+}
+
+.medalina-menu-hero .medalina-menu-container {
+  position: relative;
+  z-index: 3;
+}
+  
+.medalina-menu-hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--medalina-font-heading);
+  text-transform: uppercase;
+  font-weight: 800;
+  }
+  
+.medalina-menu-hero p {
+  font-size: 1.25rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--medalina-font-body);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .medalina-menu-hero {
+    padding: 6rem 0 3rem;
+  }
+  
+  .medalina-menu-hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .medalina-menu-hero p {
+    font-size: 1.1rem;
+    padding: 0 1rem;
+  }
+}
+
+.medalina-menu-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  }
+  
+.medalina-menu-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  }
+  
+.medalina-menu-tab {
+  font-family: var(--medalina-font-heading);
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  color: var(--medalina-text);
+  letter-spacing: 0.05em;
+}
+
+.medalina-menu-tab.active,
+.medalina-menu-tab:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.medalina-menu-category {
+  margin-bottom: 3rem;
+  }
+
+.medalina-menu-category-title {
+  font-family: var(--medalina-font-heading);
+  font-weight: 800;
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--medalina-text);
+}
+
+.medalina-menu-category-desc {
+  font-family: var(--medalina-font-body);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  max-width: 800px;
+}
+
+.medalina-menu-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.medalina-menu-item {
+  margin-bottom: 1.5rem;
+  }
+
+.medalina-menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  }
+
+.medalina-menu-item-title {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.medalina-menu-item-price {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.medalina-menu-item-desc {
+  font-family: var(--medalina-font-body);
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.medalina-menu-allergen {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+
+.medalina-menu-allergen h3 {
+  font-family: var(--medalina-font-heading);
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.medalina-menu-allergen ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medalina-menu-allergen li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+  font-family: var(--medalina-font-body);
+}
+
+.medalina-menu-allergen li:before {
+  content: '•';
+  position: absolute;
+  left: 0.5rem;
+}
+
+.medalina-menu-cta {
+  text-align: center;
+  margin: 3rem 0;
+}
+
+@media (max-width: 768px) {
+  .medalina-menu-hero {
+    padding: 4rem 0 2rem;
+}
+
+  .medalina-menu-hero h1 {
+    font-size: 2.2rem;
+}
+
+  .medalina-menu-tabs {
+    flex-direction: column;
+    align-items: center;
+}
+
+  .medalina-menu-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Catering Page Styles */
+.medalina-catering-hero {
+  position: relative;
+  padding: 8rem 1.5rem 6rem;
+  text-align: center;
+  overflow: hidden;
+  color: white;
+}
+
+.medalina-catering-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.medalina-catering-hero-img {
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+}
+
+.medalina-catering-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 1;
+}
+
+.medalina-catering-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.medalina-catering-hero h1 {
+  font-family: var(--medalina-font-heading);
+  font-size: 3.5rem;
+  margin-bottom: 2rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.medalina-catering-text {
+  color: white;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.medalina-catering-text p {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.medalina-catering-cta {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.medalina-catering-cta .medalina-btn-primary {
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  min-width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .medalina-catering-hero {
+    padding: 6rem 1.5rem 4rem;
+  }
+  
+  .medalina-catering-hero h1 {
+    font-size: 2.5rem;
+  }
+}
+
+.medalina-btn-primary {
+  background-color: rgba(35, 30, 0, 0.9);
+  color: var(--medalina-yellow);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--medalina-font-heading);
+  font-weight: bold;
+  display: inline-block;
+  text-transform: uppercase;
+  border: none;
+  transition: background-color 0.3s;
+  border: 1px solid var(--medalina-yellow);
+  letter-spacing: 0.05em;
+}
+
+.medalina-btn-primary:hover {
+  background-color: rgba(50, 40, 0, 0.95);
+}
+
+.medalina-event-catering {
+  padding: 5rem 1.5rem;
+  background-color: var(--medalina-bg);
+}
+
+.medalina-event-catering-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.medalina-event-catering-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.medalina-event-catering-image {
+  flex: 1;
+  position: relative;
+}
+
+.medalina-event-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  aspect-ratio: 4/3;
+}
+
+.medalina-event-img:hover {
+  transform: scale(1.03);
+}
+
+.medalina-event-catering-text {
+  flex: 1;
+  color: var(--medalina-text);
+}
+
+.medalina-event-catering-text h2 {
+  font-family: var(--medalina-font-heading);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--medalina-dark);
+}
+
+.medalina-event-catering-text p {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.medalina-event-catering-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.medalina-event-btn {
+  background-color: rgba(35, 30, 0, 0.9);
+  color: var(--medalina-yellow);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--medalina-font-heading);
+  font-weight: bold;
+  display: inline-block;
+  text-transform: uppercase;
+  border: 1px solid var(--medalina-yellow);
+  transition: background-color 0.3s;
+  letter-spacing: 0.05em;
+  margin: 0.5rem 0;
+}
+
+.medalina-event-btn:hover {
+  background-color: rgba(50, 40, 0, 0.95);
+}
+
+@media (min-width: 768px) {
+  .medalina-event-catering-content {
+    flex-direction: row;
+}
+
+  .medalina-event-catering-image,
+  .medalina-event-catering-text {
+    flex: 1;
+  }
+} 

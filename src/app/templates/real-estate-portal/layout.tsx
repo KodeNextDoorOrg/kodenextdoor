@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './styles/template.css';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Tenant Portal',
@@ -13,7 +16,7 @@ export default function RealEstatePortalLayout({
 }) {
   return (
     <html lang="en">
-      <body className="rep-root">
+      <body className={`rep-root ${inter.className}`}>
         {children}
       </body>
     </html>
