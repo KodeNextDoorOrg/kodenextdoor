@@ -4,7 +4,7 @@ import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import Image from 'next/image';
 
 // Define more specific types to replace 'any'
@@ -22,10 +22,10 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-800/90 dark:to-gray-900/70 border-white/20 dark:border-gray-700/30 shadow-lg",
-        subtle: "bg-white/50 dark:bg-gray-800/50 border-white/10 dark:border-gray-700/20 shadow-md",
-        accent: "bg-gradient-to-br from-primary/20 to-secondary/20 border-white/20 dark:border-gray-700/30 shadow-lg",
-        elevated: "bg-white dark:bg-gray-800 border-white/30 dark:border-gray-700/30 shadow-xl",
+        default: "bg-gradient-to-br from-gray-800/90 to-gray-900/70 border-gray-700/30 shadow-lg",
+        subtle: "bg-gray-800/50 border-gray-700/20 shadow-md",
+        accent: "bg-gradient-to-br from-primary/20 to-secondary/20 border-gray-700/30 shadow-lg",
+        elevated: "bg-gray-800 border-gray-700/30 shadow-xl",
       },
       padding: {
         none: "",
@@ -130,7 +130,7 @@ Card.Title = function CardTitle({
   children: ReactNode;
 }) {
   return (
-    <h3 className={`text-xl font-bold text-gray-800 dark:text-white ${className}`} {...props}>
+    <h3 className={`text-xl font-bold text-white ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -145,7 +145,7 @@ Card.Description = function CardDescription({
   children: ReactNode;
 }) {
   return (
-    <p className={`text-gray-600 dark:text-gray-300 ${className}`} {...props}>
+    <p className={`text-gray-300 ${className}`} {...props}>
       {children}
     </p>
   );
@@ -196,7 +196,7 @@ const CardMedia = forwardRef<HTMLDivElement, CardMediaProps>(({
     <div 
       ref={ref}
       className={cn(
-        "relative overflow-hidden bg-gray-100 dark:bg-gray-700",
+        "relative overflow-hidden bg-gray-700",
         !fill && aspectRatioClasses[aspectRatio],
         className
       )}

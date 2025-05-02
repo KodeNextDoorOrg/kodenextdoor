@@ -89,9 +89,9 @@ export default function AdminDashboard() {
       <div className="animate-pulse">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+            <div key={i} className="bg-gray-800 p-6 rounded-lg shadow-sm">
+              <div className="h-6 bg-gray-700 rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-gray-700 rounded w-2/3"></div>
             </div>
           ))}
         </div>
@@ -102,16 +102,16 @@ export default function AdminDashboard() {
   return (
     <div>
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
+        <div className="bg-red-900/30 text-red-300 p-4 rounded-lg mb-6">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Projects Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Projects</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Projects</h2>
             <Link
               href="/admin/projects"
               className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
@@ -119,14 +119,14 @@ export default function AdminDashboard() {
               View All
             </Link>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.projects}</p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Total Projects</p>
+          <p className="text-2xl sm:text-3xl font-bold text-white">{stats.projects}</p>
+          <p className="text-sm sm:text-base text-gray-300 mt-1">Total Projects</p>
         </div>
 
         {/* Services Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Services</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Services</h2>
             <Link
               href="/admin/services"
               className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
@@ -134,14 +134,14 @@ export default function AdminDashboard() {
               View All
             </Link>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.services}</p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Active Services</p>
+          <p className="text-2xl sm:text-3xl font-bold text-white">{stats.services}</p>
+          <p className="text-sm sm:text-base text-gray-300 mt-1">Active Services</p>
         </div>
 
         {/* Client Satisfaction Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Client Satisfaction</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Client Satisfaction</h2>
             <Link
               href="/admin/company"
               className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
@@ -149,16 +149,16 @@ export default function AdminDashboard() {
               Update
             </Link>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-white">
             {stats.companyInfo.clientSatisfaction}%
           </p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Average Rating</p>
+          <p className="text-sm sm:text-base text-gray-300 mt-1">Average Rating</p>
         </div>
 
         {/* Years Experience Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Experience</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Experience</h2>
             <Link
               href="/admin/company"
               className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
@@ -166,16 +166,16 @@ export default function AdminDashboard() {
               Update
             </Link>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-white">
             {stats.companyInfo.yearsExperience}
           </p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Years of Experience</p>
+          <p className="text-sm sm:text-base text-gray-300 mt-1">Years of Experience</p>
         </div>
 
         {/* Projects Completed Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Completed</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Completed</h2>
             <Link
               href="/admin/company"
               className="text-sm sm:text-base text-primary hover:text-primary-dark transition-colors"
@@ -183,19 +183,19 @@ export default function AdminDashboard() {
               Update
             </Link>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl sm:text-3xl font-bold text-white">
             {stats.companyInfo.projectsCompleted}
           </p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Projects Completed</p>
+          <p className="text-sm sm:text-base text-gray-300 mt-1">Projects Completed</p>
         </div>
 
         {/* Quick Actions Card */}
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Quick Actions</h2>
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm">
+          <h2 className="text-lg sm:text-xl font-medium text-white mb-3 sm:mb-4">Quick Actions</h2>
           <div className="space-y-2">
             <Link
               href="/admin/projects/new"
-              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-300 hover:text-primary transition-colors"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/admin/services/new"
-              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-300 hover:text-primary transition-colors"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/admin/messages"
-              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-300 hover:text-primary transition-colors"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -222,7 +222,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/admin/contact"
-              className="flex items-center text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="flex items-center text-sm sm:text-base text-gray-300 hover:text-primary transition-colors"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

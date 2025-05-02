@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Container } from './Container';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 const sectionVariants = cva(
   "relative overflow-hidden",

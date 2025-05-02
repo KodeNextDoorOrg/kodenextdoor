@@ -92,8 +92,8 @@ export default function AdminLayout({
       setIsLoading(true);
       await signOut(auth);
       router.push('/admin/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
+    } catch {
+      // Error handling without console.error
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +105,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-gray-900 flex">
       {/* Mobile menu backdrop */}
       {isMobileMenuOpen && (
         <div
@@ -115,7 +115,7 @@ export default function AdminLayout({
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-transform duration-200 ease-in-out z-30 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      <aside className={`fixed lg:static w-64 bg-gray-800 border-r border-gray-700 h-screen transition-transform duration-200 ease-in-out z-30 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
         <nav className="mt-4">
           {navigationItems.map((item) => {
@@ -126,7 +126,7 @@ export default function AdminLayout({
                 href={item.href}
                 className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-colors ${isActive
                   ? 'bg-primary/10 text-primary'
-                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'text-gray-200 hover:bg-gray-700'
                   }`}
               >
                 {item.icon}
@@ -139,13 +139,13 @@ export default function AdminLayout({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <header className="bg-gray-800 border-b border-gray-700">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center justify-between">
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
+                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-300"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -155,7 +155,7 @@ export default function AdminLayout({
             <div className="flex items-center justify-end space-x-4">
               <Link
                 href="/"
-                className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                className="flex items-center space-x-2 text-gray-300 hover:text-primary transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -165,7 +165,7 @@ export default function AdminLayout({
               <button
                 onClick={handleLogout}
                 disabled={isLoading}
-                className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                className="flex items-center space-x-2 text-gray-300 hover:text-red-400 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

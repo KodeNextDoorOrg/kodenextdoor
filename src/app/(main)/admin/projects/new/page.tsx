@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { ProjectForm } from '@/components/admin/ProjectForm';
 
 interface ProjectFormData {
   title: string;
@@ -99,17 +98,17 @@ export default function NewProjectPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-medium mb-8">New Project</h1>
+      <h1 className="text-3xl font-medium mb-8 text-white">New Project</h1>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
+        <div className="bg-red-900/30 text-red-300 p-4 rounded-lg mb-6">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
             Project Title
           </label>
           <input
@@ -118,12 +117,12 @@ export default function NewProjectPage() {
             required
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
             Description
           </label>
           <textarea
@@ -132,12 +131,12 @@ export default function NewProjectPage() {
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
             Category
           </label>
           <input
@@ -146,25 +145,25 @@ export default function NewProjectPage() {
             required
             value={formData.category}
             onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Technologies
           </label>
           <div className="flex flex-wrap gap-2 mb-2">
             {formData.technologies.map((tech) => (
               <span
                 key={tech}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300"
               >
                 {tech}
                 <button
                   type="button"
                   onClick={() => handleRemoveTechnology(tech)}
-                  className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="ml-2 text-gray-400 hover:text-gray-200"
                 >
                   ×
                 </button>
@@ -177,12 +176,12 @@ export default function NewProjectPage() {
               value={newTechnology}
               onChange={(e) => setNewTechnology(e.target.value)}
               placeholder="Add technology"
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <button
               type="button"
               onClick={handleAddTechnology}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
             >
               Add
             </button>
@@ -190,20 +189,20 @@ export default function NewProjectPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Features
           </label>
           <div className="flex flex-wrap gap-2 mb-2">
             {formData.features.map((feature) => (
               <span
                 key={feature}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300"
               >
                 {feature}
                 <button
                   type="button"
                   onClick={() => handleRemoveFeature(feature)}
-                  className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="ml-2 text-gray-400 hover:text-gray-200"
                 >
                   ×
                 </button>
@@ -216,12 +215,12 @@ export default function NewProjectPage() {
               value={newFeature}
               onChange={(e) => setNewFeature(e.target.value)}
               placeholder="Add feature"
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <button
               type="button"
               onClick={handleAddFeature}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
             >
               Add
             </button>
@@ -229,7 +228,7 @@ export default function NewProjectPage() {
         </div>
 
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-300 mb-1">
             Image URL
           </label>
           <input
@@ -238,12 +237,12 @@ export default function NewProjectPage() {
             required
             value={formData.imageUrl}
             onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="caseStudyUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="caseStudyUrl" className="block text-sm font-medium text-gray-300 mb-1">
             Case Study URL (Optional)
           </label>
           <input
@@ -251,12 +250,12 @@ export default function NewProjectPage() {
             id="caseStudyUrl"
             value={formData.caseStudyUrl}
             onChange={(e) => setFormData(prev => ({ ...prev, caseStudyUrl: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="liveUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="liveUrl" className="block text-sm font-medium text-gray-300 mb-1">
             Live URL (Optional)
           </label>
           <input
@@ -264,18 +263,17 @@ export default function NewProjectPage() {
             id="liveUrl"
             value={formData.liveUrl}
             onChange={(e) => setFormData(prev => ({ ...prev, liveUrl: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={() => router.push('/admin/projects')}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+          <Link
+            href="/admin/projects"
+            className="px-4 py-2 border border-gray-600 rounded-md text-gray-300 hover:bg-gray-700 transition-colors"
           >
             Cancel
-          </button>
+          </Link>
           <button
             type="submit"
             disabled={isSubmitting}

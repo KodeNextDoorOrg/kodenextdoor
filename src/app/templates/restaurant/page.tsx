@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Bars3Icon as MenuIcon, XMarkIcon as XIcon } from '@heroicons/react/24/outline';
-import Carousel, { CarouselSlide } from "../../components/Carousel";
+import Carousel, { CarouselSlide } from "./components/Carousel";
 import Link from 'next/link';
 
 // Replace the MedalinaLogo component with a text-based logo

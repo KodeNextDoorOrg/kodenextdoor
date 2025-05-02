@@ -10,8 +10,8 @@ const textVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-gray-600 dark:text-gray-300",
-        muted: "text-gray-500 dark:text-gray-400",
+        default: "text-gray-300",
+        muted: "text-gray-400",
         primary: "text-primary",
         secondary: "text-secondary",
         accent: "text-accent",

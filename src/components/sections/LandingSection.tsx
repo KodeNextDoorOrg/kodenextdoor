@@ -224,7 +224,7 @@ export default function LandingSection() {
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button variant="primary" href="#services" size="lg">
+                <Button variant="outline" href="#services" size="lg" >
                   Explore Services
                 </Button>
               </motion.div>

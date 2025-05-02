@@ -8,9 +8,7 @@ import {
   doc,
   query,
   orderBy,
-  where,
   serverTimestamp,
-  QueryConstraint,
   FirestoreError
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -33,7 +31,6 @@ export const saveService = async (service: Omit<Service, 'id' | 'createdAt' | 'u
 
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error('Error saving service:', error);
     const errorMessage = error instanceof FirestoreError 
       ? error.message 
       : 'An unknown error occurred';
@@ -55,8 +52,7 @@ export const getServiceById = async (id: string): Promise<Service | null> => {
       return { id: docSnap.id, ...docSnap.data() } as Service;
     }
     return null;
-  } catch (error) {
-    console.error('Error getting service:', error);
+  } catch {
     return null;
   }
 };
@@ -67,26 +63,14 @@ export const getServiceById = async (id: string): Promise<Service | null> => {
 export const getAllServices = async (activeOnly: boolean = false): Promise<Service[]> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
-
-    console.log('getAllServices called with activeOnly =', activeOnly);
     
     // Get all services without filtering in the query
     const allServicesQuery = query(collection(db, COLLECTION_NAME), orderBy('order', 'asc'));
     const querySnapshot = await getDocs(allServicesQuery);
     
-    console.log('Found', querySnapshot.docs.length, 'total services');
-    
     // Map all services and normalize the isActive property
     const allServices = querySnapshot.docs.map(doc => {
       const data = doc.data();
-      
-      // *** Add logging here to inspect the raw icon data ***
-      console.log(`Service ${doc.id} - Raw data icon:`, {
-        iconValue: data.icon,
-        iconType: typeof data.icon,
-        dataObject: data // Log the whole data object for context
-      });
-      // *** End added logging ***
       
       // Normalize isActive to a boolean value regardless of its original type
       // Handle various data types: boolean, string, number
@@ -109,12 +93,6 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
         isActive = Boolean(data.isActive);
       }
       
-      console.log(`Service ${doc.id} (${data.title || 'unnamed'}) isActive:`, {
-        original: data.isActive,
-        originalType: typeof data.isActive,
-        normalized: isActive
-      });
-      
       // Return the service with normalized isActive and ensure all properties are present
       // Explicitly cast to Service to satisfy TypeScript
       return {
@@ -125,10 +103,6 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
         color: data.color || '',
         features: data.features || [],
         order: data.order !== undefined ? data.order : 0, // Ensure order has a default
-        // We keep the original Firestore Timestamps for createdAt/updatedAt if needed, 
-        // or handle their conversion elsewhere if required.
-        // For now, let's assume the Service type expects them as they are from Firestore
-        // or that they are handled correctly downstream.
         createdAt: data.createdAt, 
         updatedAt: data.updatedAt,
         isActive: isActive, // Use the normalized value
@@ -140,10 +114,8 @@ export const getAllServices = async (activeOnly: boolean = false): Promise<Servi
       ? allServices.filter(service => service.isActive === true)
       : allServices;
     
-    console.log('Returning', results.length, 'services (filtered by activeOnly:', activeOnly, ')');
     return results;
-  } catch (error) {
-    console.error('Error getting services:', error);
+  } catch {
     return [];
   }
 };
@@ -163,7 +135,6 @@ export const updateService = async (id: string, updates: Partial<Service>): Prom
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating service:', error);
     const errorMessage = error instanceof FirestoreError 
       ? error.message 
       : 'An unknown error occurred';
@@ -181,7 +152,6 @@ export const deleteService = async (id: string): Promise<{ success: boolean; err
     await deleteDoc(doc(db, COLLECTION_NAME, id));
     return { success: true };
   } catch (error) {
-    console.error('Error deleting service:', error);
     const errorMessage = error instanceof FirestoreError 
       ? error.message 
       : 'An unknown error occurred';
@@ -198,11 +168,9 @@ export async function reorderServices(serviceIds: string[]): Promise<boolean> {
       const serviceRef = doc(db, COLLECTION_NAME, id);
       return updateDoc(serviceRef, { order: index });
     });
-    
     await Promise.all(updates);
     return true;
-  } catch (error) {
-    console.error('Error reordering services:', error);
+  } catch {
     return false;
   }
 } 

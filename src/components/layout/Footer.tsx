@@ -47,9 +47,7 @@ export default function Footer() {
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
-        console.log('Footer: Fetching contact info...');
         const info = await getContactInfo();
-        console.log('Footer: Contact info received:', info);
         setContactInfo(info);
       } catch (error) {
         console.error('Footer: Error fetching contact info:', error);
@@ -69,7 +67,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-light dark:bg-gray-dark pt-16 pb-8">
+    <footer className="bg-gray-dark pt-16 pb-8">
       <Container>
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
@@ -91,7 +89,7 @@ export default function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200/80 to-white/50 dark:from-gray-700/80 dark:to-gray-800/50 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-primary hover:text-white transition-colors shadow-sm"
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700/80 to-gray-800/50 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-colors shadow-sm"
                   whileHover={{ y: -5 }}
                   aria-label={link.label}
                 >
@@ -105,7 +103,7 @@ export default function Footer() {
           {/* Footer Sections */}
           {footerSections.map((section) => (
             <div key={section.title}>
-              <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+              <h3 className="text-lg font-semibold mb-4 text-white">
                 {section.title}
               </h3>
               <ul className="space-y-3">
@@ -113,7 +111,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                      className="text-gray-300 hover:text-primary transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -125,29 +123,29 @@ export default function Footer() {
         </div>
 
         {/* Contact Info - Now loaded from database */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-8 border-t border-b border-gray-200 dark:border-gray-700 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-8 border-t border-b border-gray-700 mb-8">
           <div className="text-center">
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Email Us</h4>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">Email Us</h4>
             <a href={`mailto:${contactInfo?.email}`} className="text-primary hover:underline">
               {contactInfo?.email}
             </a>
           </div>
           <div className="text-center ">
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Call Us</h4>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">Call Us</h4>
             <a href={`tel:${contactInfo?.phone}`} className="text-primary hover:underline ">
               {contactInfo?.phone}
             </a>
           </div>
           <div className="text-center">
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Located In</h4>
-            <p className="text-gray-700 dark:text-gray-300">
+            <h4 className="text-sm font-medium text-gray-400 mb-2">Located In</h4>
+            <p className="text-gray-300">
               {contactInfo?.address}
             </p>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
           <p>&copy; {new Date().getFullYear()} Kode Next Door. All rights reserved. We&apos;re dedicated to your digital success.</p>
         </div>
       </Container>

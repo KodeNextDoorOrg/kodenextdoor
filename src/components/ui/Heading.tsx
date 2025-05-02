@@ -3,7 +3,7 @@
 import { createElement, forwardRef, useState, useEffect } from 'react';
 import { motion, MotionProps } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import React from 'react';
 
 // Define heading variants
@@ -20,11 +20,11 @@ const headingVariants = cva(
         h6: "text-base sm:text-lg md:text-xl leading-tight",
       },
       variant: {
-        default: "text-gray-800 dark:text-white",
+        default: "text-white",
         primary: "text-primary",
         secondary: "text-secondary",
         gradient: "text-gradient",
-        muted: "text-gray-600 dark:text-gray-300",
+        muted: "text-gray-300",
       },
       align: {
         left: "text-left",

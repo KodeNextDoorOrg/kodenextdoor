@@ -79,7 +79,6 @@ export default function ContactSection() {
         setErrorMessage(result.error || 'Failed to submit your message. Please try again.');
       }
     } catch (error) {
-      console.error('Error submitting contact form:', error);
       setSubmitStatus('error');
       setErrorMessage('An unexpected error occurred. Please try again later.');
     } finally {
@@ -90,7 +89,7 @@ export default function ContactSection() {
   return (
     <Section
       id="contact"
-      className="relative overflow-hidden py-24 bg-gray-50 dark:bg-gray-900"
+      className="relative overflow-hidden py-24 bg-gray-900"
       ref={ref}
     >
       {/* Animated background */}
@@ -132,11 +131,11 @@ export default function ContactSection() {
                 Let's Discuss Your <span className="text-gradient">Next Project</span>
               </Heading>
 
-              <Text variant="large" className="mb-6 text-gray-700 dark:text-gray-300 max-w-xl">
+              <Text variant="large" className="mb-6 text-gray-300 max-w-xl">
                 We&apos;re here to help with any questions about our services, potential collaborations, or how we can assist with your digital needs.
               </Text>
 
-              <Text className="mb-8 text-gray-600 dark:text-gray-400">
+              <Text className="mb-8 text-gray-400">
                 Let&apos;s start a conversation and discover how we can work together to achieve your goals.
               </Text>
             </div>
@@ -156,7 +155,7 @@ export default function ContactSection() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Email Us</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-white">Email Us</h3>
                   <a href={`mailto:${email}`} className="text-primary hover:text-primary-dark transition-colors">
                     {email}
                   </a>
@@ -176,7 +175,7 @@ export default function ContactSection() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Call Us</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-white">Call Us</h3>
                   <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-primary hover:text-primary-dark transition-colors">
                     {phone}
                   </a>
@@ -197,8 +196,8 @@ export default function ContactSection() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Lets Meet In Person</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-1">Based in Saint Louis, MO</p>
+                  <h3 className="text-lg font-semibold mb-1 text-white">Lets Meet In Person</h3>
+                  <p className="text-gray-300 mb-1">Based in Saint Louis, MO</p>
                 </div>
               </motion.div>
             </div>
@@ -212,7 +211,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="lg:pl-8"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+            <div className="bg-gray-800 rounded-2xl shadow-xl p-8">
               {submitStatus === 'success' ? (
                 <motion.div
                   className="text-center py-12"
@@ -225,25 +224,26 @@ export default function ContactSection() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Message Sent!</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mt-2">
+                  <h3 className="text-2xl font-bold mb-2 text-white">Message Sent!</h3>
+                  <p className="text-gray-300 mt-2">
                     Thank you for your message! We&apos;ll get back to you as soon as possible.
                   </p>
                   <Button
                     variant="secondary"
                     onClick={() => setSubmitStatus('idle')}
+                    className="border border-white mt-3"
                   >
                     Send Another Message
                   </Button>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Send us a message</h3>
+                  <h3 className="text-xl font-semibold mb-4 text-white">Send us a message</h3>
 
                   {/* Error message */}
                   {submitStatus === 'error' && (
                     <motion.div
-                      className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 p-4 rounded-lg mb-4"
+                      className="bg-red-900/20 text-red-200 p-4 rounded-lg mb-4"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
@@ -258,7 +258,7 @@ export default function ContactSection() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                         Full Name
                       </label>
                       <input
@@ -269,11 +269,11 @@ export default function ContactSection() {
                         placeholder="John Doe"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                        className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                         Email Address
                       </label>
                       <input
@@ -284,13 +284,13 @@ export default function ContactSection() {
                         placeholder="john@example.com"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                        className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
                       Phone Number (Optional)
                     </label>
                     <input
@@ -300,12 +300,12 @@ export default function ContactSection() {
                       placeholder="+1 (234) 567-890"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
                       Message
                     </label>
                     <textarea
@@ -316,7 +316,7 @@ export default function ContactSection() {
                       placeholder="Tell us about your project..."
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                     />
                   </div>
 

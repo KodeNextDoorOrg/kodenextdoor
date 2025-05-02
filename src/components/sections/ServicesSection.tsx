@@ -31,38 +31,20 @@ export default function ServicesSection() {
   const fetchServices = async () => {
     try {
       setIsLoading(true);
-      console.log('Attempting to fetch services, activeOnly=true');
       
       // First try with activeOnly filter
       let fetchedServices = await getAllServices(true); 
-      console.log('Services fetched with activeOnly=true:', fetchedServices);
       
       // If no services are found, try fetching all services
       if (fetchedServices.length === 0) {
-        console.log('No active services found. Fetching all services...');
         fetchedServices = await getAllServices(false);
-        console.log('All services fetched:', fetchedServices);
         
         // Filter for active services in the component (as a fallback)
         fetchedServices = fetchedServices.filter(service => {
-          console.log(`Manually checking if service ${service.id} is active:`, service.isActive);
           // Now service.isActive is guaranteed to be boolean by getAllServices
           return service.isActive === true;
         });
-        
-        console.log('Services after manual filtering:', fetchedServices);
       }
-      
-      console.log('Number of services to display:', fetchedServices.length);
-      // Check each service for isActive field
-      fetchedServices.forEach((service, i) => {
-        console.log(`Service ${i+1}:`, {
-          id: service.id,
-          title: service.title,
-          isActive: service.isActive,
-          isActiveType: typeof service.isActive
-        });
-      });
       
       // Map the services to our display format with default colors if not specified
       const colorOptions = [
@@ -82,18 +64,6 @@ export default function ServicesSection() {
         color: service.color || colorOptions[index % colorOptions.length]
       }));
       
-      console.log('Mapped displayServices:', displayServices);
-      // Add detailed logging for icon data
-      displayServices.forEach((service, i) => {
-        console.log(`Service ${i+1} icon:`, {
-          title: service.title,
-          iconExists: !!service.icon,
-          iconLength: service.icon ? service.icon.length : 0,
-          iconStartsWithSvg: service.icon ? service.icon.trim().startsWith('<svg') : false,
-          iconEndsWithSvg: service.icon ? service.icon.trim().endsWith('</svg>') : false,
-          iconPreview: service.icon ? service.icon.substring(0, 30) + '...' : 'no icon'
-        });
-      });
       setServices(displayServices);
     } catch (err) {
       console.error('Error loading services:', err);
@@ -189,23 +159,23 @@ export default function ServicesSection() {
             {[...Array(6)].map((_, index) => (
               <div 
                 key={index} 
-                className="relative rounded-2xl overflow-hidden bg-white/50 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/30 p-6 h-64 animate-pulse"
+                className="relative rounded-2xl overflow-hidden bg-gray-800/50 border border-gray-700/30 p-6 h-64 animate-pulse"
               >
-                <div className="w-16 h-16 rounded-2xl mb-6 bg-gray-200 dark:bg-gray-700"></div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3 w-3/4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-full"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                <div className="w-16 h-16 rounded-2xl mb-6 bg-gray-700"></div>
+                <div className="h-6 bg-gray-700 rounded mb-3 w-3/4"></div>
+                <div className="h-4 bg-gray-700 rounded mb-2 w-full"></div>
+                <div className="h-4 bg-gray-700 rounded w-5/6"></div>
               </div>
             ))}
           </div>
         ) : error ? (
           // Show error message
-          <div className="text-center p-10 bg-red-50 dark:bg-red-900/20 rounded-xl">
-            <div className="text-red-600 dark:text-red-400 mb-4 text-2xl">⚠️</div>
-            <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-2">
+          <div className="text-center p-10 bg-red-900/20 rounded-xl">
+            <div className="text-red-400 mb-4 text-2xl">⚠️</div>
+            <h3 className="text-lg font-medium text-red-300 mb-2">
               Oops! Something went wrong
             </h3>
-            <p className="text-red-600 dark:text-red-400">
+            <p className="text-red-400">
               {error}. Please try refreshing the page.
             </p>
           </div>
@@ -219,7 +189,7 @@ export default function ServicesSection() {
         )}
         
         <motion.div 
-          className="mt-20 p-10 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 relative overflow-hidden shadow-lg"
+          className="mt-20 p-10 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-gray-700/30 relative overflow-hidden shadow-lg"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -242,7 +212,7 @@ export default function ServicesSection() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
             <div>
               <motion.h3 
-                className="text-2xl md:text-3xl font-bold mb-3 text-gray-800 dark:text-white"
+                className="text-2xl md:text-3xl font-bold mb-3 text-white"
                 initial={{ x: -20, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
                 viewport={{ once: true }}
@@ -251,7 +221,7 @@ export default function ServicesSection() {
                 Ready to transform your business?
               </motion.h3>
               <motion.p 
-                className="text-gray-600 dark:text-gray-300 text-lg"
+                className="text-gray-300 text-lg"
                 initial={{ x: -20, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
                 viewport={{ once: true }}
@@ -268,7 +238,7 @@ export default function ServicesSection() {
               viewport={{ once: true }}
               transition={{ delay: 0.7, type: "spring", stiffness: 400, damping: 10 }}
             >
-              <Button variant="primary" href="#contact" size="lg" className="px-8 py-3 text-lg">
+              <Button variant="primary" href="#contact" size="lg" className="px-8 py-3 text-lg hover:bg-lime-600 hover:after:none border border-white">
                 Get in Touch
               </Button>
             </motion.div>
@@ -319,7 +289,7 @@ const ServiceCard = ({ service, index }: { service: ServiceDisplayProps; index: 
   return (
     <motion.div
       ref={ref}
-      className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-800/90 dark:to-gray-900/70 border border-white/20 dark:border-gray-700/30 p-6 transform-gpu shadow-lg backdrop-blur-sm h-full"
+      className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-gray-800/90 to-gray-900/70 border border-gray-700/30 p-6 transform-gpu shadow-lg backdrop-blur-sm h-full"
       initial={{ opacity: 0, y: 30, rotateX: -10 }}
       animate={isInView ? { 
         opacity: 1, 
@@ -380,12 +350,12 @@ const ServiceCard = ({ service, index }: { service: ServiceDisplayProps; index: 
       {/* Service content with animation */}
       <div className="space-y-2">
         <motion.h3 
-          className="text-xl font-bold text-gray-800 dark:text-white transition-colors"
+          className="text-xl font-bold text-white transition-colors"
           animate={{ color: isHovered ? '#6366f1' : '' }}
         >
           {service.title}
         </motion.h3>
-        <motion.p className="text-gray-600 dark:text-gray-300">
+        <motion.p className="text-gray-300">
           {service.description}
         </motion.p>
         
@@ -420,7 +390,7 @@ const ServiceCard = ({ service, index }: { service: ServiceDisplayProps; index: 
                 {service.features.map((detail, i) => (
                   <motion.li 
                     key={i} 
-                    className="flex items-center text-sm text-gray-600 dark:text-gray-300"
+                    className="flex items-center text-sm text-gray-300"
                     custom={i}
                     variants={detailItemVariants}
                   >

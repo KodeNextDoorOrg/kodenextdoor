@@ -26,7 +26,7 @@ interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
 export function FormLabel({ children, className, required, ...props }: FormLabelProps) {
   return (
     <label 
-      className={`block text-sm font-medium text-gray-800 dark:text-white mb-2 ${className || ''}`} 
+      className={`block text-sm font-medium text-white mb-2 ${className || ''}`} 
       {...props}
     >
       {children}
@@ -41,10 +41,10 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white/50 dark:bg-gray-800/50 border-white/30 dark:border-gray-700/50 focus:border-primary focus:ring-1 focus:ring-primary text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400",
-        filled: "bg-gray-100 dark:bg-gray-700 border-transparent focus:border-primary focus:bg-white dark:focus:bg-gray-800 text-gray-800 dark:text-white",
-        outline: "bg-transparent border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-1 focus:ring-primary text-gray-800 dark:text-white",
-        error: "bg-white/50 dark:bg-gray-800/50 border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-800 dark:text-white",
+        default: "bg-gray-800/50 border-gray-700/50 focus:border-primary focus:ring-1 focus:ring-primary text-white placeholder-gray-400",
+        filled: "bg-gray-700 border-transparent focus:border-primary focus:bg-gray-800 text-white",
+        outline: "bg-transparent border-gray-600 focus:border-primary focus:ring-1 focus:ring-primary text-white",
+        error: "bg-gray-800/50 border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-white",
       },
       size: {
         sm: "px-3 py-2 text-sm rounded-md",

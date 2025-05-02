@@ -151,12 +151,12 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
+        <div className="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
         <div className="space-y-6">
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-10 bg-gray-700 rounded w-full"></div>
+          <div className="h-32 bg-gray-700 rounded w-full"></div>
+          <div className="h-10 bg-gray-700 rounded w-full"></div>
+          <div className="h-20 bg-gray-700 rounded w-full"></div>
         </div>
       </div>
     );
@@ -164,17 +164,17 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
 
   return (
     <div>
-      <h1 className="text-3xl font-medium mb-8">Edit Service</h1>
+      <h1 className="text-3xl font-medium mb-8 text-white">Edit Service</h1>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6">
+        <div className="bg-red-900/30 text-red-300 p-4 rounded-lg mb-6">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
             Service Title
           </label>
           <input
@@ -183,12 +183,12 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
             required
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
             Description
           </label>
           <textarea
@@ -197,45 +197,45 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Icon
           </label>
-          <IconSelector
+          <IconSelector 
             value={formData.icon}
             onChange={(iconValue) => setFormData(prev => ({ ...prev, icon: iconValue }))}
             className="mb-2"
           />
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-400">
             Select an icon from the list or enter a custom SVG code
           </p>
         </div>
-
+        
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Color Theme
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {colorOptions.map((color) => (
-              <div
+              <div 
                 key={color.value}
                 className={`
                   p-4 rounded-lg cursor-pointer border-2 
-                  ${formData.color === color.value
-                    ? 'border-primary dark:border-primary'
+                  ${formData.color === color.value 
+                    ? 'border-primary' 
                     : 'border-transparent'}
                   hover:scale-105 transition-transform
                 `}
                 onClick={() => setFormData(prev => ({ ...prev, color: color.value }))}
               >
-                <div
+                <div 
                   className={`h-12 rounded-md mb-2 bg-gradient-to-r ${color.value}`}
                 ></div>
-                <div className="text-xs text-center text-gray-700 dark:text-gray-300">
+                <div className="text-xs text-center text-gray-300">
                   {color.name}
                 </div>
               </div>
@@ -244,35 +244,20 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div>
-          <div className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={formData.isActive}
-              onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-              Active (visible on website)
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Features
           </label>
           <div className="flex flex-wrap gap-2 mb-2">
             {formData.features.map((feature) => (
               <span
                 key={feature}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300"
               >
                 {feature}
                 <button
                   type="button"
                   onClick={() => handleRemoveFeature(feature)}
-                  className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="ml-2 text-gray-400 hover:text-gray-200"
                 >
                   ×
                 </button>
@@ -285,7 +270,7 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
               value={newFeature}
               onChange={(e) => setNewFeature(e.target.value)}
               placeholder="Add feature"
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -296,39 +281,41 @@ export default function EditServicePage({ params }: { params: Promise<{ id: stri
             <button
               type="button"
               onClick={handleAddFeature}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
             >
               Add
             </button>
           </div>
         </div>
 
-        <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isActive"
+            checked={formData.isActive}
+            onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+            className="h-4 w-4 text-primary focus:ring-primary border-gray-600 rounded bg-gray-700"
+          />
+          <label htmlFor="isActive" className="ml-2 block text-sm text-gray-300">
+            Active
+          </label>
+        </div>
+
+        <div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={handleDelete}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-            disabled={isSubmitting}
+            className="px-4 py-2 border border-red-600 rounded-md text-red-400 hover:bg-red-900/30 transition-colors"
           >
             Delete Service
           </button>
-
-          <div className="flex space-x-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
+          </button>
         </div>
       </form>
     </div>

@@ -10,8 +10,8 @@ import { Project } from '@/lib/firebase';
 const ProjectImage = ({ src, alt }: { src: string; alt: string }) => {
   if (!src) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-        <span className="text-gray-500 dark:text-gray-400">{alt}</span>
+      <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+        <span className="text-gray-400">{alt}</span>
       </div>
     );
   }
@@ -133,12 +133,10 @@ export default function ProjectShowcaseSection() {
               setError('No projects found in database');
             }
           } catch (directErr) {
-            console.error('Error in direct Firestore query:', directErr);
             setError('Failed to load projects: ' + String(directErr));
           }
         }
       } catch (err) {
-        console.error('Error fetching projects:', err);
         setError('An unexpected error occurred: ' + String(err));
       } finally {
         setIsLoading(false);
@@ -243,7 +241,7 @@ export default function ProjectShowcaseSection() {
             Browse through our portfolio of successful projects that demonstrate our expertise and ability to deliver exceptional digital solutions across various industries.
           </Text>
           
-          {/* Category filter */}
+          {/*
           <div className="flex flex-wrap justify-center gap-3 mb-16">
             {categories.map((category) => (
               <motion.button
@@ -251,7 +249,7 @@ export default function ProjectShowcaseSection() {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeCategory === category
                     ? 'bg-primary text-white shadow-lg'
-                    : 'bg-white/80 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-sm'
+                    : 'bg-gray-800/80 hover:bg-gray-700 text-gray-300 shadow-sm'
                 }`}
                 onClick={() => setActiveCategory(category)}
                 whileHover={{ scale: 1.05 }}
@@ -268,8 +266,8 @@ export default function ProjectShowcaseSection() {
                 {category}
               </motion.button>
             ))}
-          </div>
-        </motion.div>
+          </div>*/}
+        </motion.div> 
         
         {/* Loading state */}
         {isLoading && (
@@ -282,15 +280,15 @@ export default function ProjectShowcaseSection() {
         {error && (
           <div className="text-center py-16">
             <motion.div 
-              className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 inline-block mx-auto"
+              className="bg-red-900/30 border border-red-800 rounded-lg p-6 inline-block mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <svg className="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Failed to load projects</h3>
-              <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+              <h3 className="text-lg font-medium text-red-200 mb-2">Failed to load projects</h3>
+              <p className="text-red-300 mb-4">{error}</p>
               <div className="space-y-2">
                 <Button 
                   variant="secondary" 
@@ -336,17 +334,17 @@ export default function ProjectShowcaseSection() {
             {filteredProjects.length === 0 && (
               <div className="text-center py-16">
                 <motion.div 
-                  className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-8 inline-block mx-auto"
+                  className="bg-gray-800/50 rounded-lg p-8 inline-block mx-auto"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
                   <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <h3 className="text-xl font-medium text-gray-300 mb-2">
                     No projects found for {activeCategory}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-gray-400 mb-4">
                     Try selecting a different category or check back later.
                   </p>
                   <Button 
@@ -370,7 +368,7 @@ export default function ProjectShowcaseSection() {
                 className="mb-16"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredProjects.map((project) => (
+                  {filteredProjects.map((project) => project.isActive ? (
                     <motion.div 
                       key={project.id}
                       variants={projectVariants}
@@ -392,22 +390,22 @@ export default function ProjectShowcaseSection() {
                         </div>
                         
                         {/* Static info - always visible */}
-                        <div className="p-5 bg-white dark:bg-gray-800 flex flex-col flex-grow">
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{project.title}</h3>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{project.description}</p>
+                        <div className="p-5 bg-gray-800 flex flex-col flex-grow">
+                          <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">{project.title}</h3>
+                          <p className="text-gray-300 text-sm mb-4 line-clamp-2">{project.description}</p>
                           
                           {/* Technologies */}
                           <div className="flex flex-wrap gap-1 mb-4">
                             {project.technologies.slice(0, 3).map((tech) => (
                               <span 
                                 key={tech} 
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300 text-xs"
+                                className="px-2 py-1 bg-gray-700 rounded-md text-gray-300 text-xs"
                               >
                                 {tech}
                               </span>
                             ))}
                             {project.technologies.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300 text-xs">
+                              <span className="px-2 py-1 bg-gray-700 rounded-md text-gray-300 text-xs">
                                 +{project.technologies.length - 3}
                               </span>
                             )}
@@ -417,35 +415,15 @@ export default function ProjectShowcaseSection() {
                             variant="secondary" 
                             size="sm" 
                             onClick={() => openProjectModal(project)}
-                            className="mt-auto self-start"
+                            className="mt-auto self-start border border-white"
                           >
                             View Details
                           </Button>
                         </div>
                       </div>
                     </motion.div>
-                  ))}
+                  ) : null)}
                 </div>
-              </motion.div>
-            )}
-            
-            {/* See more projects button - only show if at least one project exists */}
-            {projects.length > 0 && (
-              <motion.div 
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  href="/projects"
-                  className="px-8 py-3 text-lg"
-                >
-                  See More Projects
-                </Button>
               </motion.div>
             )}
           </>
@@ -463,7 +441,7 @@ export default function ProjectShowcaseSection() {
             onClick={closeProjectModal}
           >
             <motion.div 
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl"
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-auto bg-gray-900 rounded-2xl shadow-2xl"
               initial={{ scale: 0.9, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 30 }}
@@ -489,27 +467,27 @@ export default function ProjectShowcaseSection() {
               </div>
               
               {/* Project content */}
-              <div className="relative -mt-20 bg-white dark:bg-gray-900 rounded-t-3xl p-8">
+              <div className="relative -mt-20 bg-gray-900 rounded-t-3xl p-8">
                 <span className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block">
                   {selectedProject.category}
                 </span>
                 
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">
                   {selectedProject.title}
                 </h2>
                 
-                <p className="text-gray-700 dark:text-gray-300 mb-6 text-lg">
+                <p className="text-gray-300 mb-6 text-lg">
                   {selectedProject.description}
                 </p>
                 
                 {/* Technologies */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Technologies</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-white">Technologies</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.technologies.map((tech) => (
                       <span 
                         key={tech} 
-                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-md text-gray-800 dark:text-gray-200 text-sm"
+                        className="px-3 py-1 bg-gray-800 rounded-md text-gray-200 text-sm"
                       >
                         {tech}
                       </span>
@@ -519,10 +497,10 @@ export default function ProjectShowcaseSection() {
                 
                 {/* Features */}
                 <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Key Features</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-white">Key Features</h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {selectedProject.features.map((feature) => (
-                      <li key={feature} className="flex items-center text-gray-700 dark:text-gray-300">
+                      <li key={feature} className="flex items-center text-gray-300">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
                         {feature}
                       </li>
@@ -536,7 +514,7 @@ export default function ProjectShowcaseSection() {
                     variant="primary" 
                     size="lg"
                     href={selectedProject.link}
-                    className="px-8 py-3 text-lg"
+                    className="px-8 py-3 text-lg border border-white"
                   >
                     Visit Project
                   </Button>

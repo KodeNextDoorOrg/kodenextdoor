@@ -61,14 +61,11 @@ export const getContactInfo = async (): Promise<ContactInfo | null> => {
   try {
     if (!db) throw new Error('Firestore is not initialized');
 
-    console.log('Fetching contact info from collection:', CONTACT_COLLECTION);
     const docRef = doc(db, CONTACT_COLLECTION, CONTACT_DOC_ID);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      console.log('Found contact info document');
       const data = docSnap.data();
-      console.log('Contact info data:', data);
       
       // Extract social media links
       const socialMedia = data.socialMedia || {};
@@ -90,8 +87,6 @@ export const getContactInfo = async (): Promise<ContactInfo | null> => {
           twitter: socialMedia.twitter || ''
         }
       } as any as ContactInfo;
-    } else {
-      console.log('No contact info document found');
     }
     
     return null;

@@ -28,7 +28,7 @@ export default function AboutSection() {
         const info = await getCompanyInfo();
         setCompanyInfo(info);
       } catch (error) {
-        console.error('Error fetching company info:', error);
+        // Error handling without console.error
       } finally {
         setIsLoading(false);
       }
@@ -41,14 +41,9 @@ export default function AboutSection() {
   const stats: Stat[] = [
     {
       value: companyInfo?.yearsExperience ? `${companyInfo.yearsExperience}+` : '10+',
-      label: 'Years Experience',
+      label: 'Years Development Experience',
       color: 'from-indigo-500 to-purple-500'
-    },
-    {
-      value: companyInfo?.projectsCompleted ? `${companyInfo.projectsCompleted}+` : '150+',
-      label: 'Projects Completed',
-      color: 'from-blue-500 to-teal-500'
-    },
+    }
   ];
 
   const ref = useRef(null);
@@ -244,11 +239,11 @@ export default function AboutSection() {
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 blur-xl group-hover:opacity-100 transition-opacity" />
-                  <div className="relative p-6 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+                  <div className="relative p-6 rounded-xl bg-gray-800/80 border border-gray-700 backdrop-blur-sm">
                     <h3 className={`text-3xl font-bold mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
                       {stat.value}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">{stat.label}</p>
+                    <p className="text-gray-300 text-sm">{stat.label}</p>
                   </div>
                 </motion.div>
               ))}

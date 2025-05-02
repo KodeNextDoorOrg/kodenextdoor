@@ -25,14 +25,6 @@ const isFirebaseConfigured =
   !!firebaseConfig.projectId;
 
 if (!isFirebaseConfigured) {
-  console.error('Firebase configuration is incomplete. Check your environment variables:', {
-    apiKey: !!firebaseConfig.apiKey, 
-    authDomain: !!firebaseConfig.authDomain, 
-    projectId: !!firebaseConfig.projectId,
-    storageBucket: !!firebaseConfig.storageBucket,
-    messagingSenderId: !!firebaseConfig.messagingSenderId,
-    appId: !!firebaseConfig.appId
-  });
   throw new Error('Firebase configuration is incomplete');
 }
 
@@ -44,11 +36,9 @@ let analytics: Analytics | null = null;
 
 // Initialize Firebase only if it hasn't been initialized yet
 if (!getApps().length) {
-  console.log('Initializing Firebase app...');
   app = initializeApp(firebaseConfig);
   
   // Initialize Firebase services
-  console.log('Initializing Firebase services...');
   db = getFirestore(app);
   auth = getAuth(app);
   storage = getStorage(app);
@@ -56,15 +46,14 @@ if (!getApps().length) {
   // Set persistence to LOCAL by default
   if (typeof window !== 'undefined') {
     setPersistence(auth, browserLocalPersistence)
-      .catch((error) => {
-        console.error('Error setting auth persistence:', error);
+      .catch(() => {
+        // Error setting auth persistence
       });
   }
 
   // Initialize Analytics only on client side
   if (typeof window !== 'undefined') {
     analytics = getAnalytics(app);
-    console.log('Firebase Analytics initialized');
   }
 
   // Use Firebase Local Emulator if we're in development and it's configured
@@ -74,10 +63,7 @@ if (!getApps().length) {
     connectFirestoreEmulator(db, EMULATOR_HOST, 8080);
     connectAuthEmulator(auth, `http://${EMULATOR_HOST}:9099`);
     connectStorageEmulator(storage, EMULATOR_HOST, 9199);
-    console.log('Using Firebase Local Emulator');
   }
-
-  console.log('Firebase initialized successfully with project ID:', firebaseConfig.projectId);
 } else {
   app = getApp();
   db = getFirestore(app);

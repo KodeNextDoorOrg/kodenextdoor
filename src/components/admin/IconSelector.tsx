@@ -185,7 +185,6 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
           if (svgString && svgString.startsWith('<svg')) {
             onChange(svgString);
           } else {
-            console.error('Failed to capture SVG string from rendered icon (in microtask).');
             onChange('<svg></svg>');
           }
           // Optional: Clean up the root after capturing
@@ -193,7 +192,6 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
         });
 
       } catch (error) { 
-        console.error('Error rendering icon to string:', error);
         onChange('<svg></svg>');
       }
     }
@@ -205,7 +203,7 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
     <div className={`relative ${className}`} ref={dropdownRef}>
       {/* Selected icon display */}
       <div 
-        className="flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white cursor-pointer"
+        className="flex items-center justify-between px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
@@ -230,12 +228,12 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
       
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full max-h-96 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+        <div className="absolute z-50 mt-1 w-full max-h-96 overflow-y-auto bg-gray-800 border border-gray-600 rounded-md shadow-lg">
           {/* Search and filters */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 p-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="sticky top-0 bg-gray-800 p-2 border-b border-gray-700">
             <input
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-2"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white mb-2"
               placeholder="Search icons..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -246,7 +244,7 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
                 className={`px-2 py-1 text-xs rounded-full ${
                   !selectedCategory 
                     ? 'bg-primary text-white' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    : 'bg-gray-700 text-gray-300'
                 }`}
                 onClick={() => setSelectedCategory(null)}
               >
@@ -258,7 +256,7 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
                   className={`px-2 py-1 text-xs rounded-full ${
                     selectedCategory === category 
                       ? 'bg-primary text-white' 
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      : 'bg-gray-700 text-gray-300'
                   }`}
                   onClick={() => setSelectedCategory(category)}
                 >
@@ -273,8 +271,8 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
             {filteredIcons.map(icon => (
               <div
                 key={icon.name}
-                className={`p-3 flex flex-col items-center justify-center rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  selectedIcon === icon.name ? 'bg-primary/10 border border-primary dark:bg-primary/20' : ''
+                className={`p-3 flex flex-col items-center justify-center rounded-md cursor-pointer hover:bg-gray-700 ${
+                  selectedIcon === icon.name ? 'bg-primary/10 border bg-primary/20' : ''
                 }`}
                 onClick={() => handleSelectIcon(icon.name)}
               >
@@ -284,7 +282,7 @@ export default function IconSelector({ value, onChange, className = '' }: IconSe
             ))}
             
             {filteredIcons.length === 0 && (
-              <div className="col-span-4 py-8 text-center text-gray-500 dark:text-gray-400">
+              <div className="col-span-4 py-8 text-center text-gray-400">
                 No icons found matching your search
               </div>
             )}

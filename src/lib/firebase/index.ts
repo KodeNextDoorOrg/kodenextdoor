@@ -4,7 +4,7 @@
  */
 
 // Firebase configuration and initialized services
-export * from '../firebase';
+export * from './firebase';
 
 // Firebase API functions for data operations
 export * as FirebaseAPI from './api';

@@ -44,7 +44,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'py-3 bg-white/90 dark:bg-gray-900/90 shadow-md backdrop-blur-md'
+        ? 'py-3 bg-gray-900/90 shadow-md backdrop-blur-md'
         : 'py-5 bg-transparent'
         }`}
     >
@@ -56,7 +56,7 @@ export default function Header() {
               className="text-2xl font-bold "
               whileHover={{ scale: 1.05 }}
             >
-              KodeNextDoor Logo Placeholder
+             
             </motion.div>
           </Link>
 
@@ -66,7 +66,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors font-medium"
+                className="text-gray-200 dark:hover:text-primary transition-colors font-medium"
               >
                 <motion.span
                   whileHover={{ y: -2 }}
@@ -108,7 +108,7 @@ export default function Header() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg"
+            className="md:hidden absolute top-full left-0 right-0 bg-gray-900 shadow-lg"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -125,7 +125,7 @@ export default function Header() {
                   >
                     <Link
                       href={item.href}
-                      className="block py-2 px-4 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                      className="block py-2 px-4 text-gray-200 hover:bg-gray-800 rounded-md transition-colors"
                       onClick={handleNavLinkClick}
                     >
                       {item.name}

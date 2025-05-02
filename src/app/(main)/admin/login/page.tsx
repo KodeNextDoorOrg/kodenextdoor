@@ -42,7 +42,6 @@ export default function LoginPage() {
 
       // Check if the user is an admin
       const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-      console.log(userDoc.data());
       if (!userDoc.exists() || userDoc.data().role !== 'admin') {
         await signOut(auth);
         throw new Error('Unauthorized access');
@@ -80,24 +79,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-2 text-white">
           Admin Login
         </h1>
-        <p className="mb-6 text-gray-600 dark:text-gray-300">
+        <p className="mb-6 text-gray-300">
           Sign in to access your admin dashboard
         </p>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-900/30 text-red-300 px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
               Email
             </label>
             <input
@@ -106,13 +105,13 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
               Password
             </label>
             <input
@@ -121,7 +120,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={isLoading}
             />
           </div>
