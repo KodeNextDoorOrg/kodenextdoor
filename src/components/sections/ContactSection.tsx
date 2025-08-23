@@ -4,7 +4,8 @@ import { Button, Container, Heading, Section, Text } from '@/components/ui';
 import * as FirebaseAPI from '@/lib/firebase/api/contactSubmissions';
 import { ContactInfo } from '@/lib/firebase/models/types';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getContactInfo } from '@/lib/firebase/api/contactInfo';
 
 export default function ContactSection() {
   // Form state
@@ -36,6 +37,21 @@ export default function ContactSection() {
   const phone = contactInfo?.phone || '314-665-4673';
   const address = contactInfo?.address || '4220 Duncan Ave, St.Louis, MO, 63110';
   const businessHours = contactInfo?.businessHours?.weekdays || 'Monday - Friday 9:00 am to 2:00pm';
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const info = await getContactInfo();
+        setContactInfo(info);
+      } catch (error) {
+        console.error('Footer: Error fetching contact info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
